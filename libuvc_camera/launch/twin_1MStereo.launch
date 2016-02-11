@@ -1,15 +1,15 @@
 <launch>
   <arg name="width"  default="1280" />
   <arg name="height" default="960" />
-  <arg name="fps"    default="54" />
+  <arg name="fps"    default="15" />
   <arg name="exposure_absolute" default="0.0030" />
 
   <arg name="left_ns"  default="left_cam" />
   <arg name="right_ns" default="right_cam" />
 
   <!-- Left Arm -->
-  <arg name="left_left_eye_serial"   default="2832460B"/>
-  <arg name="left_right_eye_serial"  default="2933460B"/>
+  <arg name="left_left_eye_serial"   default="2837460B"/>
+  <arg name="left_right_eye_serial"  default="2833460B"/>
 <!--
   <arg name="left_left_eye_serial"   default="16114F0B"/>
   <arg name="left_right_eye_serial"  default="1021450B"/>
