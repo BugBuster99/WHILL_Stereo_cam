@@ -3,6 +3,8 @@
   <arg name="height" default="960" />
   <arg name="fps"    default="15" />
   <arg name="exposure_absolute" default="0.0030" />
+  <arg name="brightness_tgt" default="64.0"/>
+  <arg name="update_interval" default="15" />
 
   <arg name="left_ns"  default="left_cam" />
   <arg name="right_ns" default="right_cam" />
@@ -42,6 +44,8 @@
       <arg name="right_eye_serial"  value="$(arg right_right_eye_serial)"/>
       <arg name="root_nodelet_manager" value="$(arg nodelet_manager)"/>
       <arg name="camera_info_url" value="$(arg right_camera_info_url)" />
+      <arg name="brightness_tgt" value="$(arg brightness_tgt)"/>
+      <arg name="update_interval" value="$(arg update_interval)"/>
     </include>
   </group>
 
@@ -55,6 +59,8 @@
       <arg name="right_eye_serial"  value="$(arg left_right_eye_serial)"/>
       <arg name="root_nodelet_manager" value="$(arg nodelet_manager)"/>
       <arg name="camera_info_url" value="$(arg left_camera_info_url)" />
+      <arg name="brightness_tgt" value="$(arg brightness_tgt)"/>
+      <arg name="update_interval" value="$(arg update_interval)"/>
     </include>
   </group>
 </launch>

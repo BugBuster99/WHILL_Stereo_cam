@@ -13,10 +13,17 @@ import cv2
 
 
 class ev_calculator:
-    def __init__(self, master_node_name='left_master', brightness_tgt=128.0, step_size=0.001, update_interval=5, max_exposure=0.1):
+    def __init__(self, 
+                 master_node_name='left_master', 
+                 brightness_tgt=128.0, 
+                 max_step_size=0.001, 
+                 min_step_size=0.0005, 
+                 update_interval=5, 
+                 max_exposure=0.1):
         self.bridge = CvBridge()
         self.__brightness_tgt  = brightness_tgt
-        self.__step_size       = step_size
+        self.__max_step_size   = max_step_size
+        self.__min_step_size   = min_step_size
         self.__update_interval = update_interval
         self.__max_exposure    = max_exposure
         self.client = Client(master_node_name, timeout=30, config_callback=None)
@@ -36,25 +43,28 @@ class ev_calculator:
             old_exposure_absolute = self.params['exposure_absolute']
             new_exposure_absolute = pow(2.0, log(self.__brightness_tgt, 2) - log(brightness_pre, 2) + log(old_exposure_absolute, 2))
             #new_exposure_absolute = old_exposure_absolute * self.__brightness_tgt / brightness_pre
-            if fabs(new_exposure_absolute - old_exposure_absolute) > self.__step_size:
-                if new_exposure_absolute < old_exposure_absolute:
-                    new_exposure_absolute = old_exposure_absolute - self.__step_size 
-                else:
-                    new_exposure_absolute = old_exposure_absolute + self.__step_size 
-            if new_exposure_absolute > max_exposure:
-                new_exposure_absolute = max_exposure 
+            exposure_step = fabs(new_exposure_absolute - old_exposure_absolute) 
+            if exposure_step > self.__min_step_size:
+                if exposure_step > self.__max_step_size:
+                    if new_exposure_absolute < old_exposure_absolute:
+                        new_exposure_absolute = old_exposure_absolute - self.__max_step_size 
+                    else:
+                        new_exposure_absolute = old_exposure_absolute + self.__max_step_size 
+                if new_exposure_absolute > max_exposure:
+                    new_exposure_absolute = max_exposure 
 
-            self.ev_pub.publish(new_exposure_absolute)
+                self.ev_pub.publish(new_exposure_absolute)
     
 
 if __name__ == "__main__":
     rospy.init_node("auto_exposure_controller")
     master_node_name = rospy.get_param('~master_node_name', 'left_master')
     brightness_tgt   = rospy.get_param('~brightness_tgt', 128.0)
-    step_size        = rospy.get_param('~step_size', 0.001)
+    max_step_size    = rospy.get_param('~max_step_size', 0.001)
+    min_step_size    = rospy.get_param('~min_step_size', 0.0005)
     update_interval  = rospy.get_param('~update_interval', 5)
     max_exposure     = rospy.get_param('~max_exposure', 0.1)
 
-    calc = ev_calculator(master_node_name, brightness_tgt, step_size, update_interval, max_exposure)
+    calc = ev_calculator(master_node_name, brightness_tgt, max_step_size, min_step_size, update_interval, max_exposure)
     while not rospy.is_shutdown():
         rospy.spin()
