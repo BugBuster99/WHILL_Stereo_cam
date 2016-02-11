@@ -2,17 +2,27 @@
   <arg name="width"  default="1280" />
   <arg name="height" default="960" />
   <arg name="fps"    default="54" />
-  <arg name="right_ns" default="right_cam" />
-  <arg name="left_ns"  default="left_cam" />
-  <arg name="right_left_eye_serial"   default="36234D0B"/>
-  <arg name="right_right_eye_serial"  default="1125450B"/>
-<!--
-  <arg name="right_left_eye_serial"   default="0F2F450B"/>
-  <arg name="right_right_eye_serial"  default="262B450B"/>
--->
+  <arg name="exposure_absolute" default="0.0030" />
 
+  <arg name="left_ns"  default="left_cam" />
+  <arg name="right_ns" default="right_cam" />
+
+  <!-- Left Arm -->
+  <arg name="left_left_eye_serial"   default="2832460B"/>
+  <arg name="left_right_eye_serial"  default="2933460B"/>
+<!--
   <arg name="left_left_eye_serial"   default="16114F0B"/>
   <arg name="left_right_eye_serial"  default="1021450B"/>
+-->
+
+  <!-- Right Arm -->
+  <arg name="right_left_eye_serial"   default="2836460B"/>
+  <arg name="right_right_eye_serial"  default="2935460B"/>
+<!--
+  <arg name="right_left_eye_serial"   default="36234D0B"/>
+  <arg name="right_right_eye_serial"  default="1125450B"/>
+-->
+
   <arg name="left_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_left.yaml"/>
   <arg name="right_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_right.yaml"/>
 
@@ -27,14 +37,11 @@
       <arg name="width"           value="$(arg width)"/> 
       <arg name="height"          value="$(arg height)"/>
       <arg name="fps"             value="$(arg fps)"/>
+      <arg name="exposure_absolute" value="$(arg exposure_absolute)" />
       <arg name="left_eye_serial"   value="$(arg right_left_eye_serial)"/>
       <arg name="right_eye_serial"  value="$(arg right_right_eye_serial)"/>
       <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
       <arg name="camera_info_url" value="$(arg right_camera_info_url)" />
-<!--
-      <arg name="product" value="0xc111"/>
-      <arg name="video_mode" value="sgrbg"/>
--->
     </include>
   </group>
 
@@ -43,6 +50,7 @@
       <arg name="width"           value="$(arg width)"/> 
       <arg name="height"          value="$(arg height)"/>
       <arg name="fps"             value="$(arg fps)"/>
+      <arg name="exposure_absolute" value="$(arg exposure_absolute)" />
       <arg name="left_eye_serial"   value="$(arg left_left_eye_serial)"/>
       <arg name="right_eye_serial"  value="$(arg left_right_eye_serial)"/>
       <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
