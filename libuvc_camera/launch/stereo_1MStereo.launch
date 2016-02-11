@@ -63,7 +63,6 @@
   <node pkg="libuvc_camera" name="master_ev_controller" type="auto_exposure_master.py" output="screen">
     <remap from="src_image" to="$(arg left_eye_node_name)/image_raw"/>
     <param name="~master_node_name" value="$(arg left_eye_node_name)"/>
-    <param name="~slave_node_name"  value="$(arg right_eye_node_name)"/>
     <param name="~brightness_tgt"   value="64.0"/>
     <param name="~step_size"        value="0.05"/>
     <param name="~update_interval"  value="5"/>
@@ -71,6 +70,6 @@
   </node>
 
   <node pkg="libuvc_camera" name="slave_ev_controller" type="auto_exposure_slave.py" output="screen">
-    <param name="~master_node_name" value="$(arg left_eye_node_name)"/>
+    <param name="~slave_node_name"  value="$(arg right_eye_node_name)"/>
   </node>
 </launch>
