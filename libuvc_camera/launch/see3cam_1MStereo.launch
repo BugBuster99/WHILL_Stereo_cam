@@ -26,7 +26,7 @@
   <arg name="nodelet_manager" value="$(arg root_nodelet_manager)" unless="$(arg is_manager_inherited)"/>
   <node pkg="nodelet" type="nodelet" name="manager" args="manager" output="screen" if="$(arg is_manager_inherited)" />
 
-  <node pkg="nodelet" type="nodelet" name="$(arg node_name)" args="load libuvc_camera/stereo_driver $(arg nodelet_manager)" output="screen" >
+  <node pkg="nodelet" type="nodelet" name="$(arg node_name)" args="load libuvc_camera/stereo_driver $(arg nodelet_manager)" output="screen" respawn="true">
     <remap from="image_raw" to="$(arg node_name)/image_raw"/>
     <remap from="set_camera_info" to="$(arg node_name)/set_camera_info"/>
     <remap from="set_stream_mode" to="$(arg node_name)/set_stream_mode"/>
@@ -37,7 +37,7 @@
     <!-- Parameters used to find the camera -->
     <param name="vendor" value="$(arg vendor)"/>
     <param name="product" value="$(arg product)"/>
-    <param name="serial" value="$(arg serial)"/>
+    <param name="serial" type="string" value="$(arg serial)"/>
     <!-- If the above parameters aren't unique, choose the first match: -->
     <param name="index" value="0"/>
     

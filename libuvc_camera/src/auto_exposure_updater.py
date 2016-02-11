@@ -19,7 +19,7 @@ class ev_updater:
         self.client.update_configuration(self.params)
 
     def config_callback(self, config):
-        rospy.loginfo("{node_name}: exposure_absolute set to {exposure_absolute}".format(node_name=self.node_name, **config))
+        rospy.logdebug("{node_name}: exposure_absolute set to {exposure_absolute}".format(node_name=self.node_name, **config))
 
 if __name__ == "__main__":
     rospy.init_node("auto_exposure_controller")
