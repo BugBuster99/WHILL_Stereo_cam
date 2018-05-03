@@ -175,7 +175,14 @@ void CameraDriver::ImageCallback(uvc_frame_t *frame) {
   sensor_msgs::Image::Ptr image(new sensor_msgs::Image());
   image->width = config_.width;
   image->height = config_.height;
-  image->step = image->width * 3;
+  if(frame->frame_format == UVC_FRAME_FORMAT_GRAY8)
+  {
+    image->step = image->width;
+  }
+  else
+  {
+    image->step = image->width * 3;
+  }
   image->data.resize(image->step * image->height);
 
   if (frame->frame_format == UVC_FRAME_FORMAT_BGR){
@@ -208,6 +215,9 @@ void CameraDriver::ImageCallback(uvc_frame_t *frame) {
     image->encoding = "rgb8";
     memcpy(&(image->data[0]), rgb_frame_->data, rgb_frame_->data_bytes);
 #endif
+  } else if (frame->frame_format == UVC_FRAME_FORMAT_GRAY8) {
+    image->encoding = "mono8";
+    memcpy(&(image->data[0]), frame->data, image->width * image->height);
   } else {
     uvc_error_t conv_ret = uvc_any2bgr(frame, rgb_frame_);
     if (conv_ret != UVC_SUCCESS) {
