@@ -33,12 +33,18 @@ add_executable(camera_node src/main.cpp src/camera_driver.cpp)
 target_link_libraries(camera_node ${libuvc_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(camera_node ${PROJECT_NAME}_gencfg)
 
+
 add_library(libuvc_camera_nodelet src/nodelet.cpp src/camera_driver.cpp)
 add_dependencies(libuvc_camera_nodelet ${libuvc_camera_EXPORTED_TARGETS})
 target_link_libraries(libuvc_camera_nodelet ${libuvc_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(libuvc_camera_nodelet ${PROJECT_NAME}_gencfg)
 
-install(TARGETS camera_node libuvc_camera_nodelet
+add_library(libuvc_stereo_nodelet src/stereo_nodelet.cpp src/stereo_driver.cpp src/xunit/xunit_lib_whill.c)
+add_dependencies(libuvc_stereo_nodelet ${libuvc_camera_EXPORTED_TARGETS})
+target_link_libraries(libuvc_stereo_nodelet ${libuvc_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(libuvc_stereo_nodelet ${PROJECT_NAME}_gencfg)
+
+install(TARGETS camera_node libuvc_camera_nodelet libuvc_stereo_nodelet
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
