@@ -6,6 +6,9 @@
       UVC camera driver nodelet.
     </description>
   </class>
+</library>
+
+<library path="lib/liblibuvc_stereo_nodelet">
   <class name="libuvc_camera/stereo_driver"
          type="libuvc_camera::StereoNodelet"
          base_class_type="nodelet::Nodelet">

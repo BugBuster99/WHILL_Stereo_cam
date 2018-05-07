@@ -32,6 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 #include "libuvc_camera/stereo_driver.h"
+#include "xunit/xunit_lib.h"
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
@@ -414,6 +415,20 @@ void StereoDriver::OpenCamera(UVCCameraConfig &new_config) {
 
     uvc_unref_device(dev_);
     return;
+  }
+
+  /* Open Extension Unit */
+  hid_fd = InitExtensionUnit(new_config.serial.c_str());
+  if(hid_fd == NULL_HANDLE)
+  {
+    ROS_ERROR("Extention Unit Failed to open");
+  }
+  else
+  {
+    g_FWver_t fwversion = {0};
+    int ret = ReadFirmwareVersion (&hid_fd, &fwversion);
+    ROS_INFO("Firmware Version: %d.%d.%d.%d", fwversion.pMajorVersion, fwversion.pMinorVersion1, fwversion.pMinorVersion2, fwversion.pMinorVersion3);
+    ROS_INFO("Trigger_mode: %d", Trigger_Mode(&hid_fd));
   }
 
   uvc_set_status_callback(devh_, &StereoDriver::AutoControlsCallbackAdapter, this);

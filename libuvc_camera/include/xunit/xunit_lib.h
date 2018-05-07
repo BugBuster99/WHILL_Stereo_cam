@@ -1,7 +1,11 @@
 #ifndef XUNIT_LIB_H
 #define XUNIT_LIB_H
 
-#include "xunit_tab_lib.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "xunit/xunit_tab_lib.h"
 #include <libudev.h>
 
 
@@ -52,6 +56,8 @@ const char *bus_str(int);
 
 unsigned int GetTickCount();
 
-int find_hid_device(char *);
-
+int find_hid_device(const char *);
+#ifdef __cplusplus
+}
+#endif
 #endif

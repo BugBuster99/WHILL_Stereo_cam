@@ -4,20 +4,20 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef bool              BOOL;
-typedef int8_t            INT8;
-typedef int16_t           INT16;
-typedef int32_t           INT32;
-typedef unsigned char     UINT8;
-typedef unsigned short int UINT16;
-typedef unsigned int      UINT32;
+typedef bool                BOOL;
+typedef int8_t              INT8;
+typedef int16_t             INT16;
+typedef int32_t             INT32;
+typedef unsigned char       UINT8;
+typedef unsigned short int  UINT16;
+typedef unsigned int        UINT32;
 
 #define FALSE 0
 #define TRUE 1
 
 /* VID and PID of SEE3CAM Products */
-#define SEE3CAM_USB_VID			0x2560
-#define SEE3CAM_1MSTEREO_MONO_PID  	0xC110
+#define SEE3CAM_USB_VID			          0x2560
+#define SEE3CAM_1MSTEREO_MONO_PID    	0xC110
 #define SEE3CAM_1MSTEREO_COLOUR_PID 	0xC111
 
 
@@ -38,14 +38,6 @@ enum see3cam_device_index
 {
   SEE3CAM_1MSTEREO_MONO = 1,
   SEE3CAM_1MSTEREO_COLOUR,
-  SEE3CAM_80USB,
-  SEE3CAM_CU50,
-  SEE3CAM_CU51,
-  SEE3CAM_AR0130,
-  SEE3CAM_CU130,
-  SEE3CAM_OV7251,
-  SEE3CAM_OV2311,
-  SEE3CAM_OV9282,
 };
 
 typedef struct g_FWVER
@@ -84,7 +76,7 @@ typedef struct g_CPLDversion
   UINT32 usercode;
 } g_CPLDversion_t;
 
-uint32_t InitExtensionUnit(char *);
+uint32_t InitExtensionUnit(const char *);
 
 int DeinitExtensionUnit(uint32_t *);
 

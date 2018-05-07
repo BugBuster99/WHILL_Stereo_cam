@@ -245,7 +245,7 @@ unsigned int GetTickCount()
 */
 
 
-int find_hid_device(char *videobusname)
+int find_hid_device(const char *serial)
 {
   struct udev *udev;
   struct udev_enumerate *enumerate;
@@ -285,23 +285,27 @@ int find_hid_device(char *videobusname)
             "usb",
             "usb_device");
     if (!pdev) {
-      printf("Unable to find parent usb device.");
+      printf("Unable to find parent usb device.\n");
       return PASS;
     }
-  
+
     if(!strncmp(udev_device_get_sysattr_value(pdev,"idVendor"), "2560", 4)) {
-      if(!strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c110", 4)) {
-        hid_device = udev_device_get_devnode(dev);
-        udev_device_unref(pdev);
-      }
-      else if(!strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c111", 4)) {
-        hid_device = udev_device_get_devnode(dev);
-        udev_device_unref(pdev);
+      if(!strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c110", 4) ||
+         !strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c111", 4)) {
+        if(!strncmp(udev_device_get_sysattr_value(pdev,"serial"), serial, 8)) {
+          printf("    idVendor:  %s\n", udev_device_get_sysattr_value(pdev, "idVendor"));
+          printf("    idProduct: %s\n", udev_device_get_sysattr_value(pdev, "idProduct"));
+          printf("    Serial:    %s = %s\n", udev_device_get_sysattr_value(pdev, "serial"), serial);
+          hid_device = udev_device_get_devnode(dev);
+          udev_device_unref(pdev);
+          ret = TRUE;
+        }
       }
     }
   
     //Open each hid device and Check for bus name here
     g_Handle = open(hid_device, O_RDWR|O_NONBLOCK);
+    //printf("%d\n", g_Handle);
   
     if (g_Handle < 0) {
       perror("Unable to open device");
@@ -316,10 +320,6 @@ int find_hid_device(char *videobusname)
       perror("HIDIOCGRAWPHYS");
     }
   
-    //check if bus names are same or else close the hid device
-    if(!strncmp(videobusname,buf,strlen(videobusname))){
-      ret = TRUE;
-    }
     /* Close the hid fd */
     if(g_Handle > 0)
     {
@@ -561,7 +561,8 @@ int Trigger_Mode (uint32_t *g_Handle)
   **********************************************************************************************************
 */
 
-uint32_t InitExtensionUnit(char *USBInstanceID)
+//uint32_t InitExtensionUnit(char *USBInstanceID)
+uint32_t InitExtensionUnit(const char *serial)
 {
   int i, ret, desc_size = 0;
   UINT32 g_Handle;
@@ -569,13 +570,14 @@ uint32_t InitExtensionUnit(char *USBInstanceID)
   struct hidraw_devinfo info;
   struct hidraw_report_descriptor rpt_desc;
   
-  ret = find_hid_device((char*)USBInstanceID);
+  //ret = find_hid_device((char*)USBInstanceID);
+  ret = find_hid_device(serial);
   if(ret < 0)
   {
     printf("%s(): Not able to find the rambus device\n", __func__);
     return NULL_HANDLE;
   }
-  printf(" Selected HID Device : %s\n",hid_device);
+  printf("Selected HID Device : %s\n",hid_device);
   
   /* Open the Device with non-blocking reads. In real life,
       don't use a hard coded path; use libudev instead. */
