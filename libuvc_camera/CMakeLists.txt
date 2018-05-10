@@ -2,12 +2,34 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(libuvc_camera)
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS roscpp camera_info_manager dynamic_reconfigure image_transport nodelet sensor_msgs)
+find_package(
+  catkin REQUIRED COMPONENTS 
+  roscpp 
+  message_generation
+  camera_info_manager 
+  dynamic_reconfigure 
+  image_transport 
+  nodelet 
+  sensor_msgs
+)
+
 
 generate_dynamic_reconfigure_options(cfg/UVCCamera.cfg)
 
 find_package(libuvc REQUIRED)
 message(STATUS "libuvc ${libuvc_VERSION_MAJOR}.${libuvc_VERSION_MINOR}.${libuvc_VERSION_PATCH}")
+
+add_service_files(
+  FILES
+  SetStreamMode.srv
+  GetStreamMode.srv
+  GetFirmwareVersion.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+#  std_msgs
+)
 
 catkin_package(
   CATKIN_DEPENDS
@@ -17,7 +39,7 @@ catkin_package(
     image_transport
     nodelet
     sensor_msgs
-  LIBRARIES libuvc_camera_nodelet
+    LIBRARIES libuvc_camera_nodelet
   )
 
 add_definitions(-Dlibuvc_VERSION_MAJOR=${libuvc_VERSION_MAJOR})
@@ -32,7 +54,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_executable(camera_node src/main.cpp src/camera_driver.cpp)
 target_link_libraries(camera_node ${libuvc_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(camera_node ${PROJECT_NAME}_gencfg)
-
 
 add_library(libuvc_camera_nodelet src/nodelet.cpp src/camera_driver.cpp)
 add_dependencies(libuvc_camera_nodelet ${libuvc_camera_EXPORTED_TARGETS})

@@ -24,6 +24,8 @@
   <node pkg="nodelet" type="nodelet" name="$(arg node_name)" args="load libuvc_camera/stereo_driver $(arg nodelet_manager)" output="screen" >
     <remap from="image_raw" to="$(arg node_name)/image_raw"/>
     <remap from="set_camera_info" to="$(arg node_name)/set_camera_info"/>
+    <remap from="set_stream_mode" to="$(arg node_name)/set_stream_mode"/>
+    <remap from="get_firmware_version" to="$(arg node_name)/get_firmware_version"/>
     <!-- Parameters used to find the camera -->
     <param name="vendor" value="$(arg vendor)"/>
     <param name="product" value="$(arg product)"/>

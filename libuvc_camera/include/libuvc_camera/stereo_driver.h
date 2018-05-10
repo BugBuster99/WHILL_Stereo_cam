@@ -9,7 +9,10 @@
 #include <camera_info_manager/camera_info_manager.h>
 #include <boost/thread/mutex.hpp>
 
-#include <libuvc_camera/UVCCameraConfig.h>
+#include "libuvc_camera/UVCCameraConfig.h"
+#include "libuvc_camera/SetStreamMode.h"
+#include "libuvc_camera/GetStreamMode.h"
+#include "libuvc_camera/GetFirmwareVersion.h"
 
 namespace libuvc_camera {
 
@@ -55,6 +58,12 @@ private:
   void ImageCallback(uvc_frame_t *frame);
   static void ImageCallbackAdapter(uvc_frame_t *frame, void *ptr);
 
+  // Service Control
+  bool SetStreamMode(libuvc_camera::SetStreamMode::Request &req,
+                     libuvc_camera::SetStreamMode::Response &res);
+  bool GetFirmwareVersion(libuvc_camera::GetFirmwareVersion::Request &req,
+                          libuvc_camera::GetFirmwareVersion::Response &res);
+
   ros::NodeHandle nh_, priv_nh_;
 
   State state_;
@@ -64,6 +73,9 @@ private:
   uvc_device_t *dev_;
   uvc_device_handle_t *devh_;
   uvc_frame_t *rgb_frame_;
+  uvc_stream_ctrl_t ctrl_;
+  uint32_t hid_fd_;
+  std::string hid_device_;
 
   image_transport::ImageTransport it_;
   image_transport::CameraPublisher cam_pub_;
@@ -71,6 +83,8 @@ private:
   dynamic_reconfigure::Server<UVCCameraConfig> config_server_;
   UVCCameraConfig config_;
   bool config_changed_;
+
+  ros::ServiceServer set_stream_srv_, get_stream_srv_, get_fwver_srv_;
 
   camera_info_manager::CameraInfoManager cinfo_manager_;
 };

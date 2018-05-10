@@ -35,6 +35,7 @@
 #include "xunit/xunit_lib.h"
 
 #include <ros/ros.h>
+#include <string>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Header.h>
 #include <image_transport/camera_publisher.h>
@@ -49,12 +50,14 @@ namespace libuvc_camera {
 StereoDriver::StereoDriver(ros::NodeHandle nh, ros::NodeHandle priv_nh)
   : nh_(nh), priv_nh_(priv_nh),
     state_(kInitial),
-    ctx_(NULL), dev_(NULL), devh_(NULL), rgb_frame_(NULL),
+    ctx_(NULL), dev_(NULL), devh_(NULL), rgb_frame_(NULL), ctrl_(), hid_fd_(0), hid_device_(),
     it_(nh_),
     config_server_(mutex_, priv_nh_),
     config_changed_(false),
     cinfo_manager_(nh) {
   cam_pub_ = it_.advertiseCamera("image_raw", 1, false);
+  set_stream_srv_ = nh_.advertiseService("set_stream_mode",&StereoDriver::SetStreamMode,this);
+  get_fwver_srv_  = nh_.advertiseService("get_firmware_version", &StereoDriver::GetFirmwareVersion, this);
 }
 
 StereoDriver::~StereoDriver() {
@@ -418,17 +421,19 @@ void StereoDriver::OpenCamera(UVCCameraConfig &new_config) {
   }
 
   /* Open Extension Unit */
-  hid_fd = InitExtensionUnit(new_config.serial.c_str());
-  if(hid_fd == NULL_HANDLE)
+  hid_fd_ = InitExtensionUnit(new_config.serial.c_str());
+  hid_device_ = std::string(hid_device);
+  if(hid_fd_ == NULL_HANDLE)
   {
     ROS_ERROR("Extention Unit Failed to open");
   }
   else
   {
     g_FWver_t fwversion = {0};
-    int ret = ReadFirmwareVersion (&hid_fd, &fwversion);
+    int ret = ReadFirmwareVersion (&hid_fd_, &fwversion);
     ROS_INFO("Firmware Version: %d.%d.%d.%d", fwversion.pMajorVersion, fwversion.pMinorVersion1, fwversion.pMinorVersion2, fwversion.pMinorVersion3);
-    ROS_INFO("Trigger_mode: %d", Trigger_Mode(&hid_fd));
+    // ROS_INFO("Trigger_mode: %d", Trigger_Mode(&hid_fd_));
+    // DeinitExtensionUnit(&hid_fd_);
   }
 
   uvc_set_status_callback(devh_, &StereoDriver::AutoControlsCallbackAdapter, this);
@@ -449,7 +454,8 @@ void StereoDriver::OpenCamera(UVCCameraConfig &new_config) {
     return;
   }
 
-  uvc_error_t stream_err = uvc_start_streaming(devh_, &ctrl, &StereoDriver::ImageCallbackAdapter, this, 0);
+  ctrl_ = ctrl;
+  uvc_error_t stream_err = uvc_start_streaming(devh_, &ctrl_, &StereoDriver::ImageCallbackAdapter, this, 0);
 
   if (stream_err != UVC_SUCCESS) {
     uvc_perror(stream_err, "uvc_start_streaming");
@@ -478,5 +484,57 @@ void StereoDriver::CloseCamera() {
 
   state_ = kStopped;
 }
+
+bool StereoDriver::SetStreamMode(libuvc_camera::SetStreamMode::Request &req,
+                                 libuvc_camera::SetStreamMode::Response &res)
+{
+  ROS_INFO("Set Stream Mode: %s, HID Handle=%d, HID Device=%s", req.mode_command.c_str(), hid_fd_, hid_device_.c_str());
+  // hid_fd_ = ReInitExtensionUnit(hid_device_.c_str());
+  
+  int result = 0;
+  bool ret = true;
+  std::string command = req.mode_command; 
+  std::transform(command.begin(), command.end(), command.begin(), ::toupper);
+
+  if(std::equal(command.begin(), command.end(), "MASTER") == true)
+  {
+    result = Master_Mode(&hid_fd_);
+  }
+  else if(std::equal(command.begin(), command.end(), "TRIGGER") == true)
+  {
+    result = Trigger_Mode(&hid_fd_);
+  }
+  else
+  {
+    ROS_WARN("Invalid Command. Acceptable command is 'Master' or 'Trigger' (Case insensitive).");
+    ret = false;
+  }
+  res.result = result;
+  // DeinitExtensionUnit(&hid_fd_);
+  return ret;
+} 
+
+bool StereoDriver::GetFirmwareVersion(libuvc_camera::GetFirmwareVersion::Request &req,
+                                       libuvc_camera::GetFirmwareVersion::Response &res)
+{
+  ROS_INFO("Read Firmware Version:  HID Handle=%d, HID Device=%s",  hid_fd_, hid_device_.c_str());
+  g_FWver_t fwversion = {0};
+  // hid_fd_ = ReInitExtensionUnit(hid_device_.c_str());
+  int ret = ReadFirmwareVersion (&hid_fd_, &fwversion);
+  // DeinitExtensionUnit(&hid_fd_);
+  ROS_INFO("Firmware Version: %d.%d.%d.%d", fwversion.pMajorVersion, fwversion.pMinorVersion1, fwversion.pMinorVersion2, fwversion.pMinorVersion3);
+  if(ret == FAIL)
+  {
+    return false;
+  }
+  else
+  {
+    res.major_version   = fwversion.pMajorVersion;
+    res.minor_version_1 = fwversion.pMinorVersion1;
+    res.minor_version_2 = fwversion.pMinorVersion2;
+    res.minor_version_3 = fwversion.pMinorVersion3;
+    return true;
+  }
+}  
 
 };

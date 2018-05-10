@@ -35,7 +35,6 @@ int ReadFirmwareVersion (uint32_t *g_Handle, g_FWver_t *g_UvcFwVer)
   int ret = 0;
   unsigned int start, end = 0;
   unsigned short int sdk_ver=0, svn_ver=0;
-  
   if(*g_Handle <= 0) {
       return FAIL;
   }
@@ -61,8 +60,9 @@ int ReadFirmwareVersion (uint32_t *g_Handle, g_FWver_t *g_UvcFwVer)
     /* Get a report from the device */
     ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
     if (ret < 0) {
-      //perror("read");
+      // perror("read");
     } else {
+      printf("%s(): read %d bytes:\n", __func__,ret);
       if(g_in_packet_buf[0] == READFIRMWAREVERSION) {
         sdk_ver = (g_in_packet_buf[3]<<8)+g_in_packet_buf[4];
         svn_ver = (g_in_packet_buf[5]<<8)+g_in_packet_buf[6];
@@ -124,7 +124,7 @@ int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen)
   while(timeout) 
   {	
     /* Get a report from the device */
-    ret = read(hid_fd, g_in_packet_buf, BUFFER_LENGTH);
+    ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
     if (ret < 0) {
       //perror("read");
     } else {
@@ -449,7 +449,7 @@ int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure)
     /* Get a report from the device */
     ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
     if (ret < 0) {
-      perror("read");
+      // perror("read");
     } else {
       printf("%s(): read %d bytes:\n", __func__,ret);
       if(g_in_packet_buf[0] == GETTRIGGERMODE ){
@@ -517,7 +517,7 @@ int Trigger_Mode (uint32_t *g_Handle)
     /* Get a report from the device */
     ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
     if (ret < 0) {
-      //perror("read");
+      // perror("read");
     } else {
       printf("%s(): read %d bytes:\n", __func__,ret);
       if(g_in_packet_buf[0] == TRIGGERMODE ){
@@ -587,6 +587,9 @@ uint32_t InitExtensionUnit(const char *serial)
     perror("Unable to open device");
     return NULL_HANDLE;
   }
+  else{
+    printf("Handle : %u\n", g_Handle);
+  }
   
   memset(&rpt_desc, 0x0, sizeof(rpt_desc));
   memset(&info, 0x0, sizeof(info));
@@ -644,5 +647,20 @@ uint32_t InitExtensionUnit(const char *serial)
     printf("\tproduct: 0x%04hx\n", info.product);
   }
   
+  return g_Handle;
+}
+
+uint32_t ReInitExtensionUnit(const char *hid_device_str)
+{
+  UINT32 g_Handle;
+  g_Handle = open(hid_device_str, O_RDWR|O_NONBLOCK);
+  
+  if (g_Handle < 0) {
+    perror("Unable to open device");
+    return NULL_HANDLE;
+  }
+  else{
+    printf("Handle : %u\n", g_Handle);
+  }
   return g_Handle;
 }

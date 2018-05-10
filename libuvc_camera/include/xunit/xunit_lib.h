@@ -41,7 +41,7 @@ extern "C" {
 
 #define NULL_HANDLE 0
 
-uint32_t hid_fd;
+//uint32_t hid_fd;
 
 unsigned char g_out_packet_buf[BUFFER_LENGTH];
 unsigned char g_in_packet_buf[BUFFER_LENGTH];

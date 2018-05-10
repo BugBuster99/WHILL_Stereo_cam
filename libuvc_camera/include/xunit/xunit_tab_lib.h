@@ -77,6 +77,7 @@ typedef struct g_CPLDversion
 } g_CPLDversion_t;
 
 uint32_t InitExtensionUnit(const char *);
+uint32_t ReInitExtensionUnit(const char *);
 
 int DeinitExtensionUnit(uint32_t *);
 

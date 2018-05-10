@@ -1,0 +1,5 @@
+---
+uint8 major_version
+uint8 minor_version_1
+uint16 minor_version_2
+uint16 minor_version_3
