@@ -13,6 +13,7 @@ find_package(
   sensor_msgs
 )
 
+SET(CMAKE_C_FLAGS_DEBUG "-g -DXUNIT_DEBUGGING=1")
 
 generate_dynamic_reconfigure_options(cfg/UVCCamera.cfg)
 

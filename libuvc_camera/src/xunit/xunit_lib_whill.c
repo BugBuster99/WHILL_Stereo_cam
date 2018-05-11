@@ -51,7 +51,7 @@ int ReadFirmwareVersion (uint32_t *g_Handle, g_FWver_t *g_UvcFwVer)
     perror("write");
     return FAIL;
   } else {
-    printf("%s(): wrote %d bytes\n", __func__,ret);
+    XUNIT_DEBUG("%s(): wrote %d bytes", __func__,ret);
   }
   /* Read the Firmware Version from the device */
   start = GetTickCount();
@@ -62,7 +62,7 @@ int ReadFirmwareVersion (uint32_t *g_Handle, g_FWver_t *g_UvcFwVer)
     if (ret < 0) {
       // perror("read");
     } else {
-      printf("%s(): read %d bytes:\n", __func__,ret);
+      XUNIT_DEBUG("%s(): read %d bytes:", __func__,ret);
       if(g_in_packet_buf[0] == READFIRMWAREVERSION) {
         sdk_ver = (g_in_packet_buf[3]<<8)+g_in_packet_buf[4];
         svn_ver = (g_in_packet_buf[5]<<8)+g_in_packet_buf[6];
@@ -78,7 +78,7 @@ int ReadFirmwareVersion (uint32_t *g_Handle, g_FWver_t *g_UvcFwVer)
     end = GetTickCount();
     if(end - start > TIMEOUT)
     {
-      printf("%s(): Timeout occurred\n", __func__);
+      XUNIT_DEBUG("%s(): Timeout occurred", __func__);
       timeout = FALSE;
       return FAIL;
     }		
@@ -117,7 +117,7 @@ int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen)
     perror("write");
     return FAIL;
   } else {
-    printf("%s(): wrote %d bytes\n", __func__,ret);
+    XUNIT_DEBUG("%s(): wrote %d bytes", __func__,ret);
   }
   /* Read the Serial Number from the device */
   start = GetTickCount();
@@ -130,8 +130,8 @@ int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen)
     } else {
       if(g_in_packet_buf[0] == GETCAMERA_UNIQUEID) {
 #if 0
-      printf("%s(): read %d bytes:\n", __func__,ret);
-      printf("g_in_packet_buf %x %x %x %x %x %x %x %x\n",g_in_packet_buf[0],g_in_packet_buf[1],g_in_packet_buf[2],
+      XUNIT_DEBUG("%s(): read %d bytes:", __func__,ret);
+      XUNIT_DEBUG("g_in_packet_buf %x %x %x %x %x %x %x %x",g_in_packet_buf[0],g_in_packet_buf[1],g_in_packet_buf[2],
               g_in_packet_buf[3],g_in_packet_buf[4],g_in_packet_buf[5],g_in_packet_buf[6],g_in_packet_buf[7]);
 #endif
         iBaseBoardSerialNumber = 0;
@@ -148,7 +148,7 @@ int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen)
     end = GetTickCount();
     if(end - start > TIMEOUT)
     {
-      printf("%s(): Timeout occurred\n", __func__);
+      XUNIT_DEBUG("%s(): Timeout occurred", __func__);
       timeout = FALSE;
       return FAIL;
     }		
@@ -258,7 +258,7 @@ int find_hid_device(const char *serial)
     /* Create the udev object */
   udev = udev_new();
   if (!udev) {
-    printf("Can't create udev\n");
+    XUNIT_DEBUG("Can't create udev");
     return PASS;
   }
   
@@ -277,7 +277,7 @@ int find_hid_device(const char *serial)
     dev = udev_device_new_from_syspath(udev, path);
   
     /* usb_device_get_devnode() returns the path to the device node itself in /dev. */
-    printf("Device Node Path: %s\n", udev_device_get_devnode(dev));
+    XUNIT_DEBUG("Device Node Path: %s", udev_device_get_devnode(dev));
     
     /* The device pointed to by dev contains information about the hidraw device. In order to get information about the USB device, get the parent device with the subsystem/devtype pair of "usb"/"usb_device". This will be several levels up the tree, but the function will find it.*/
     pdev = udev_device_get_parent_with_subsystem_devtype(
@@ -285,7 +285,7 @@ int find_hid_device(const char *serial)
             "usb",
             "usb_device");
     if (!pdev) {
-      printf("Unable to find parent usb device.\n");
+      XUNIT_DEBUG("Unable to find parent usb device.");
       return PASS;
     }
 
@@ -293,42 +293,14 @@ int find_hid_device(const char *serial)
       if(!strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c110", 4) ||
          !strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c111", 4)) {
         if(!strncmp(udev_device_get_sysattr_value(pdev,"serial"), serial, 8)) {
-          printf("    idVendor:  %s\n", udev_device_get_sysattr_value(pdev, "idVendor"));
-          printf("    idProduct: %s\n", udev_device_get_sysattr_value(pdev, "idProduct"));
-          printf("    Serial:    %s = %s\n", udev_device_get_sysattr_value(pdev, "serial"), serial);
+          XUNIT_DEBUG("    idVendor:  %s", udev_device_get_sysattr_value(pdev, "idVendor"));
+          XUNIT_DEBUG("    idProduct: %s", udev_device_get_sysattr_value(pdev, "idProduct"));
+          XUNIT_DEBUG("    Serial:    %s = %s", udev_device_get_sysattr_value(pdev, "serial"), serial);
           hid_device = udev_device_get_devnode(dev);
           udev_device_unref(pdev);
-          ret = TRUE;
+          return PASS;
         }
       }
-    }
-  
-    //Open each hid device and Check for bus name here
-    g_Handle = open(hid_device, O_RDWR|O_NONBLOCK);
-    //printf("%d\n", g_Handle);
-  
-    if (g_Handle < 0) {
-      perror("Unable to open device");
-      continue;
-    }else {
-      memset(buf, 0x00, sizeof(buf));
-    }
-  
-    /* Get Physical Location */
-    ret = ioctl(g_Handle, HIDIOCGRAWPHYS(256), buf);
-    if (ret < 0) {
-      perror("HIDIOCGRAWPHYS");
-    }
-  
-    /* Close the hid fd */
-    if(g_Handle > 0)
-    {
-      if(close(g_Handle) < 0) {
-        printf("\nFailed to close %s\n",hid_device);
-      }
-    }
-    if(ret == TRUE) {
-      return PASS;
     }
   }
   /* Free the enumerator object */
@@ -371,7 +343,7 @@ int Master_Mode (uint32_t *g_Handle)
 		perror("write");
 		return FAIL;
 	} else {
-		printf("%s(): wrote %d bytes\n", __func__,ret);
+		XUNIT_DEBUG("%s(): wrote %d bytes", __func__,ret);
 	}
     
 	/* Read the Master Mode status from the device */
@@ -383,7 +355,7 @@ int Master_Mode (uint32_t *g_Handle)
 		if (ret < 0) {
 			//perror("read");
 		} else {
-      printf("%s(): read %d bytes:\n", __func__,ret);
+      XUNIT_DEBUG("%s(): read %d bytes:", __func__,ret);
       if(g_in_packet_buf[0] == MASTERMODE ){
         if(g_in_packet_buf[1] == 0x00) {
           return FAIL;
@@ -397,7 +369,7 @@ int Master_Mode (uint32_t *g_Handle)
 		end = GetTickCount();
 		if(end - start > TIMEOUT)
 		{
-			printf("%s(): Timeout occurred\n", __func__);
+			XUNIT_DEBUG("%s(): Timeout occurred", __func__);
 			timeout = FALSE;
 			return FAIL;
 		}		
@@ -439,7 +411,7 @@ int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure)
     perror("write");
     return FAIL;
   } else {
-    printf("%s(): wrote %d bytes\n", __func__,ret);
+    XUNIT_DEBUG("%s(): wrote %d bytes", __func__,ret);
   }
     
   /* Read the Trigger Mode status from the device */
@@ -451,7 +423,7 @@ int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure)
     if (ret < 0) {
       // perror("read");
     } else {
-      printf("%s(): read %d bytes:\n", __func__,ret);
+      XUNIT_DEBUG("%s(): read %d bytes:", __func__,ret);
       if(g_in_packet_buf[0] == GETTRIGGERMODE ){
         if(g_in_packet_buf[3] == FAILURE) {
           return FAIL;
@@ -466,7 +438,7 @@ int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure)
     end = GetTickCount();
     if(end - start > TIMEOUT)
     {
-      printf("%s(): Timeout occurred\n", __func__);
+      XUNIT_DEBUG("%s(): Timeout occurred", __func__);
       timeout = FALSE;
       return FAIL;
     }		
@@ -507,7 +479,7 @@ int Trigger_Mode (uint32_t *g_Handle)
     perror("write");
     return FAIL;
   } else {
-    printf("%s(): wrote %d bytes\n", __func__,ret);
+    XUNIT_DEBUG("%s(): wrote %d bytes", __func__,ret);
   }
     
   /* Read the Trigger Mode status from the device */
@@ -519,7 +491,7 @@ int Trigger_Mode (uint32_t *g_Handle)
     if (ret < 0) {
       // perror("read");
     } else {
-      printf("%s(): read %d bytes:\n", __func__,ret);
+      XUNIT_DEBUG("%s(): read %d bytes:", __func__,ret);
       if(g_in_packet_buf[0] == TRIGGERMODE ){
         if(g_in_packet_buf[1] == 0x00) {
           return FAIL;
@@ -535,7 +507,7 @@ int Trigger_Mode (uint32_t *g_Handle)
     end = GetTickCount();
     if(end - start > TIMEOUT)
     {
-      printf("%s(): Timeout occurred\n", __func__);
+      XUNIT_DEBUG("%s(): Timeout occurred", __func__);
       timeout = FALSE;
       return FAIL;
     }		
@@ -561,7 +533,6 @@ int Trigger_Mode (uint32_t *g_Handle)
   **********************************************************************************************************
 */
 
-//uint32_t InitExtensionUnit(char *USBInstanceID)
 uint32_t InitExtensionUnit(const char *serial)
 {
   int i, ret, desc_size = 0;
@@ -570,14 +541,13 @@ uint32_t InitExtensionUnit(const char *serial)
   struct hidraw_devinfo info;
   struct hidraw_report_descriptor rpt_desc;
   
-  //ret = find_hid_device((char*)USBInstanceID);
   ret = find_hid_device(serial);
   if(ret < 0)
   {
-    printf("%s(): Not able to find the rambus device\n", __func__);
+    XUNIT_DEBUG("%s(): Not able to find the rambus device", __func__);
     return NULL_HANDLE;
   }
-  printf("Selected HID Device : %s\n",hid_device);
+  XUNIT_DEBUG("Selected HID Device : %s",hid_device);
   
   /* Open the Device with non-blocking reads. In real life,
       don't use a hard coded path; use libudev instead. */
@@ -588,7 +558,7 @@ uint32_t InitExtensionUnit(const char *serial)
     return NULL_HANDLE;
   }
   else{
-    printf("Handle : %u\n", g_Handle);
+    XUNIT_DEBUG("Handle : %u", g_Handle);
   }
   
   memset(&rpt_desc, 0x0, sizeof(rpt_desc));
@@ -602,7 +572,7 @@ uint32_t InitExtensionUnit(const char *serial)
     return NULL_HANDLE;
   }
   else
-    printf("Report Descriptor Size: %d\n", desc_size);
+    XUNIT_DEBUG("Report Descriptor Size: %d", desc_size);
   
   /* Get Report Descriptor */
   rpt_desc.size = desc_size;
@@ -611,10 +581,12 @@ uint32_t InitExtensionUnit(const char *serial)
     perror("HIDIOCGRDESC");
     return NULL_HANDLE;
   } else {
-    printf("Report Descriptors:\n");
+    #if XUNIT_DEBUGGING
+    XUNIT_DEBUG("Report Descriptors:");
     for (i = 0; i < rpt_desc.size; i++)
       printf("%hhx ", rpt_desc.value[i]);
     puts("\n");
+    #endif
   }
   
   /* Get Raw Name */
@@ -624,7 +596,7 @@ uint32_t InitExtensionUnit(const char *serial)
     return NULL_HANDLE;
   }
   else
-    printf("Raw Name: %s\n", buf);
+    XUNIT_DEBUG("Raw Name: %s", buf);
   
   /* Get Physical Location */
   ret = ioctl(g_Handle, HIDIOCGRAWPHYS(256), buf);
@@ -633,7 +605,7 @@ uint32_t InitExtensionUnit(const char *serial)
     return NULL_HANDLE;
   }
   else
-    printf("Raw Phys: %s\n", buf);
+    XUNIT_DEBUG("Raw Phys: %s", buf);
   
   /* Get Raw Info */
   ret = ioctl(g_Handle, HIDIOCGRAWINFO, &info);
@@ -641,26 +613,11 @@ uint32_t InitExtensionUnit(const char *serial)
     perror("HIDIOCGRAWINFO");
     return NULL_HANDLE;
   } else {
-    printf("Raw Info:\n");
-    printf("\tbustype: %d (%s)\n", info.bustype, bus_str(info.bustype));
-    printf("\tvendor: 0x%04hx\n", info.vendor);
-    printf("\tproduct: 0x%04hx\n", info.product);
+    XUNIT_DEBUG("Raw Info:");
+    XUNIT_DEBUG("\tbustype: %d (%s)", info.bustype, bus_str(info.bustype));
+    XUNIT_DEBUG("\tvendor: 0x%04hx", info.vendor);
+    XUNIT_DEBUG("\tproduct: 0x%04hx", info.product);
   }
   
-  return g_Handle;
-}
-
-uint32_t ReInitExtensionUnit(const char *hid_device_str)
-{
-  UINT32 g_Handle;
-  g_Handle = open(hid_device_str, O_RDWR|O_NONBLOCK);
-  
-  if (g_Handle < 0) {
-    perror("Unable to open device");
-    return NULL_HANDLE;
-  }
-  else{
-    printf("Handle : %u\n", g_Handle);
-  }
   return g_Handle;
 }

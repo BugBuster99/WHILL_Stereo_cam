@@ -432,8 +432,6 @@ void StereoDriver::OpenCamera(UVCCameraConfig &new_config) {
     g_FWver_t fwversion = {0};
     int ret = ReadFirmwareVersion (&hid_fd_, &fwversion);
     ROS_INFO("Firmware Version: %d.%d.%d.%d", fwversion.pMajorVersion, fwversion.pMinorVersion1, fwversion.pMinorVersion2, fwversion.pMinorVersion3);
-    // ROS_INFO("Trigger_mode: %d", Trigger_Mode(&hid_fd_));
-    // DeinitExtensionUnit(&hid_fd_);
   }
 
   uvc_set_status_callback(devh_, &StereoDriver::AutoControlsCallbackAdapter, this);

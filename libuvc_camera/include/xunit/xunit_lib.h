@@ -57,6 +57,14 @@ const char *bus_str(int);
 unsigned int GetTickCount();
 
 int find_hid_device(const char *);
+
+#if XUNIT_DEBUGGING
+#include <libgen.h>
+#define XUNIT_DEBUG(format, ...) fprintf(stderr, "[%s:%d/%s] " format "\n", basename(__FILE__), __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#else
+#define XUNIT_DEBUG(format, ...)
+#endif
+
 #ifdef __cplusplus
 }
 #endif
