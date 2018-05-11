@@ -94,6 +94,8 @@ int Master_Mode (uint32_t *g_Handle);
 
 int Trigger_Mode (uint32_t *g_Handle);
 
+int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure);
+
 int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen);
 
 

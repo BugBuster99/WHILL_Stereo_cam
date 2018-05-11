@@ -1,2 +1,3 @@
 ---
 int32 stream_mode
+int32 exposure

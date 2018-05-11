@@ -57,6 +57,7 @@ StereoDriver::StereoDriver(ros::NodeHandle nh, ros::NodeHandle priv_nh)
     cinfo_manager_(nh) {
   cam_pub_ = it_.advertiseCamera("image_raw", 1, false);
   set_stream_srv_ = nh_.advertiseService("set_stream_mode",&StereoDriver::SetStreamMode,this);
+  get_stream_srv_ = nh_.advertiseService("get_stream_mode",&StereoDriver::GetStreamMode,this);
   get_fwver_srv_  = nh_.advertiseService("get_firmware_version", &StereoDriver::GetFirmwareVersion, this);
 }
 
@@ -486,8 +487,8 @@ void StereoDriver::CloseCamera() {
 bool StereoDriver::SetStreamMode(libuvc_camera::SetStreamMode::Request &req,
                                  libuvc_camera::SetStreamMode::Response &res)
 {
-  ROS_INFO("Set Stream Mode: %s, HID Handle=%d, HID Device=%s", req.mode_command.c_str(), hid_fd_, hid_device_.c_str());
-  // hid_fd_ = ReInitExtensionUnit(hid_device_.c_str());
+  ROS_INFO("%s: HID Handle=%d, HID Device=%s", __func__, hid_fd_, hid_device_.c_str());
+  ROS_INFO("Command String: %s", req.mode_command.c_str());
   
   int result = 0;
   bool ret = true;
@@ -508,18 +509,15 @@ bool StereoDriver::SetStreamMode(libuvc_camera::SetStreamMode::Request &req,
     ret = false;
   }
   res.result = result;
-  // DeinitExtensionUnit(&hid_fd_);
   return ret;
 } 
 
 bool StereoDriver::GetFirmwareVersion(libuvc_camera::GetFirmwareVersion::Request &req,
-                                       libuvc_camera::GetFirmwareVersion::Response &res)
+                                      libuvc_camera::GetFirmwareVersion::Response &res)
 {
-  ROS_INFO("Read Firmware Version:  HID Handle=%d, HID Device=%s",  hid_fd_, hid_device_.c_str());
+  ROS_INFO("%s: HID Handle=%d, HID Device=%s", __func__, hid_fd_, hid_device_.c_str());
   g_FWver_t fwversion = {0};
-  // hid_fd_ = ReInitExtensionUnit(hid_device_.c_str());
   int ret = ReadFirmwareVersion (&hid_fd_, &fwversion);
-  // DeinitExtensionUnit(&hid_fd_);
   ROS_INFO("Firmware Version: %d.%d.%d.%d", fwversion.pMajorVersion, fwversion.pMinorVersion1, fwversion.pMinorVersion2, fwversion.pMinorVersion3);
   if(ret == FAIL)
   {
@@ -533,6 +531,24 @@ bool StereoDriver::GetFirmwareVersion(libuvc_camera::GetFirmwareVersion::Request
     res.minor_version_3 = fwversion.pMinorVersion3;
     return true;
   }
-}  
+}
 
+bool StereoDriver::GetStreamMode(libuvc_camera::GetStreamMode::Request &req,
+                                 libuvc_camera::GetStreamMode::Response &res)
+{
+  ROS_INFO("%s: HID Handle=%d, HID Device=%s", __func__, hid_fd_, hid_device_.c_str());
+  int exposure;
+  int mode;
+  int ret = Get_Trigger_Mode(&hid_fd_, &mode, &exposure);
+  if(ret == FAIL)
+  {
+    return false;
+  }
+  else
+  {
+    res.stream_mode = mode;
+    res.exposure = exposure;
+    return true;
+  }
+}
 };

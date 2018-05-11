@@ -63,6 +63,8 @@ private:
                      libuvc_camera::SetStreamMode::Response &res);
   bool GetFirmwareVersion(libuvc_camera::GetFirmwareVersion::Request &req,
                           libuvc_camera::GetFirmwareVersion::Response &res);
+  bool GetStreamMode(libuvc_camera::GetStreamMode::Request &req,
+                     libuvc_camera::GetStreamMode::Response &res);
 
   ros::NodeHandle nh_, priv_nh_;
 
