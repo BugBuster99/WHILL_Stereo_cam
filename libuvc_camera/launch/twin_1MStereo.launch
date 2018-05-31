@@ -1,0 +1,41 @@
+<launch>
+  <arg name="width"  default="1280" />
+  <arg name="height" default="960" />
+  <arg name="fps"    default="54" />
+  <arg name="right_ns" default="right_cam" />
+  <arg name="left_ns"  default="left_cam" />
+
+  <arg name="left_left_eye_serial"   default="0E27450B"/>
+  <arg name="left_right_eye_serial"  default="262E450B"/>
+  <arg name="right_left_eye_serial"   default="16114F0B"/>
+  <arg name="right_right_eye_serial"  default="1021450B"/>
+  <arg name="nodelet_manager" default="/manager" />
+  <arg name="left_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_left.yaml"/>
+  <arg name="right_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_right.yaml"/>
+
+  <node pkg="nodelet" type="nodelet" name="manager" args="manager" output="screen"/>
+  <group ns="$(arg right_ns)">
+    <include file="$(find libuvc_camera)/launch/stereo_1MStereo.launch">
+      <arg name="width"           value="$(arg width)"/> 
+      <arg name="height"          value="$(arg height)"/>
+      <arg name="fps"             value="$(arg fps)"/>
+      <arg name="left_eye_serial"   value="$(arg right_left_eye_serial)"/>
+      <arg name="right_eye_serial"  value="$(arg right_right_eye_serial)"/>
+      <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+      <arg name="camera_info_url" value="$(arg right_camera_info_url)" />
+    </include>
+  </group>
+
+  <group ns="$(arg left_ns)">
+    <include file="$(find libuvc_camera)/launch/stereo_1MStereo.launch">
+      <arg name="width"           value="$(arg width)"/> 
+      <arg name="height"          value="$(arg height)"/>
+      <arg name="fps"             value="$(arg fps)"/>
+      <arg name="left_eye_serial"   value="$(arg left_left_eye_serial)"/>
+      <arg name="right_eye_serial"  value="$(arg left_right_eye_serial)"/>
+      <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+      <arg name="camera_info_url" value="$(arg left_camera_info_url)" />
+    </include>
+  </group>
+</launch>
+

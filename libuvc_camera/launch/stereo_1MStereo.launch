@@ -2,13 +2,14 @@
   <arg name="width"  default="1280" />
   <arg name="height" default="960" />
   <arg name="fps"    default="54" />
-  <arg name="namespace" default="camera" />
 
   <arg name="vendor" default="0x2560" />
   <arg name="product" default="0xc110" />
   <!--<arg name="product" default="0xc111" />-->
-  <arg name="serial"  default="36234D0B"/>
-  <arg name="node_name" default="left_master" />
+  <arg name="left_eye_serial"   default="0E27450B"/>
+  <arg name="right_eye_serial"  default="262E450B"/>
+  <arg name="left_eye_node_name"  default="left_master" />
+  <arg name="right_eye_node_name" default="right_slave" />
   <arg name="nodelet_manager" default="/manager" />
 
   <arg name="video_mode" default="uncompressed" />
@@ -18,37 +19,41 @@
   <arg name="auto_white_balance" default="false" />
   <arg name="exposure_absolute" default="0.0030"/>
 
-  <node pkg="nodelet" type="nodelet" name="manager" args="manager" output="screen"/>
 
-  <group ns="right_cam">
-    <!-- ===== Left Master ===== -->
-    <include file="$(find libuvc_camera)/launch/see3cam_1MStereo.launch">
-      <arg name="width"           value="$(arg width)"/> 
-      <arg name="height"          value="$(arg height)"/>
-      <arg name="fps"             value="$(arg fps)"/>
-      <arg name="product"         value="$(arg product)" />
-      <arg name="serial"          value="36234D0B"/>
-      <!--<arg name="serial"          value="112C450B"/>-->
-      <arg name="node_name"       value="left_master"/>
-      <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
-      <arg name="video_mode"      value="$(arg video_mode)"/>
-      <arg name="auto_exposure"   value="$(arg auto_exposure)"/>
-      <arg name="exposure_absolute" value="$(arg exposure_absolute)"/>
-    </include>
+  <!-- ===== Left Master ===== -->
+  <include file="$(find libuvc_camera)/launch/see3cam_1MStereo.launch">
+    <arg name="width"           value="$(arg width)"/> 
+    <arg name="height"          value="$(arg height)"/>
+    <arg name="fps"             value="$(arg fps)"/>
+    <arg name="product"         value="$(arg product)" />
+    <arg name="serial"          value="$(arg left_eye_serial)"/>
+    <arg name="node_name"       value="$(arg left_eye_node_name)"/>
+    <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+    <arg name="video_mode"      value="$(arg video_mode)"/>
+    <arg name="auto_exposure"   value="$(arg auto_exposure)"/>
+    <arg name="exposure_absolute" value="$(arg exposure_absolute)"/>
+  </include>
 
-    <!-- ===== Right Slave ===== -->
-    <include file="$(find libuvc_camera)/launch/see3cam_1MStereo.launch">
-      <arg name="width"           value="$(arg width)"/> 
-      <arg name="height"          value="$(arg height)"/>
-      <arg name="fps"             value="$(arg fps)"/>
-      <arg name="product"         value="$(arg product)" />
-      <arg name="serial"          value="1125450B"/>
-      <!--<arg name="serial"          value="100E450B"/>-->
-      <arg name="node_name"       value="right_slave"/>
-      <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
-      <arg name="video_mode"      value="$(arg video_mode)"/>
-      <arg name="auto_exposure"   value="$(arg auto_exposure)"/>
-      <arg name="exposure_absolute" value="$(arg exposure_absolute)"/>
-    </include>
-  </group>
+  <!-- ===== Right Slave ===== -->
+  <include file="$(find libuvc_camera)/launch/see3cam_1MStereo.launch">
+    <arg name="width"           value="$(arg width)"/> 
+    <arg name="height"          value="$(arg height)"/>
+    <arg name="fps"             value="$(arg fps)"/>
+    <arg name="product"         value="$(arg product)" />
+    <arg name="serial"          value="$(arg right_eye_serial)"/>
+    <arg name="node_name"       value="$(arg right_eye_node_name)"/>
+    <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+    <arg name="video_mode"      value="$(arg video_mode)"/>
+    <arg name="auto_exposure"   value="$(arg auto_exposure)"/>
+    <arg name="exposure_absolute" value="$(arg exposure_absolute)"/>
+  </include>
+    
+  <include file="$(find fisheye_stereo)/launch/frame_sync.launch">
+    <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+    <arg name="image_width"     value="$(arg width)" />
+    <arg name="image_height"    value="$(arg height)" />
+    <arg name="left_eye_node_name"  value="$(arg left_eye_node_name)"/>
+    <arg name="right_eye_node_name" value="$(arg right_eye_node_name)"/>
+  </include>
+
 </launch>
