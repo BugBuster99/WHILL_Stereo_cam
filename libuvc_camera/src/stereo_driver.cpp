@@ -59,6 +59,8 @@ StereoDriver::StereoDriver(ros::NodeHandle nh, ros::NodeHandle priv_nh)
   set_stream_srv_ = nh_.advertiseService("set_stream_mode",&StereoDriver::SetStreamMode,this);
   get_stream_srv_ = nh_.advertiseService("get_stream_mode",&StereoDriver::GetStreamMode,this);
   get_fwver_srv_  = nh_.advertiseService("get_firmware_version", &StereoDriver::GetFirmwareVersion, this);
+  set_frame_rate_srv_ = nh_.advertiseService("set_frame_rate",&StereoDriver::SetFrameRate,this);
+  get_frame_rate_srv_ = nh_.advertiseService("get_frame_rate",&StereoDriver::GetFrameRate,this);
 }
 
 StereoDriver::~StereoDriver() {
@@ -433,6 +435,8 @@ void StereoDriver::OpenCamera(UVCCameraConfig &new_config) {
     g_FWver_t fwversion = {0};
     int ret = ReadFirmwareVersion (&hid_fd_, &fwversion);
     ROS_INFO("Firmware Version: %d.%d.%d.%d", fwversion.pMajorVersion, fwversion.pMinorVersion1, fwversion.pMinorVersion2, fwversion.pMinorVersion3);
+    ret = SetFrameRateValue(&hid_fd_, static_cast<uint32_t>(new_config.frame_rate));
+    ROS_INFO("Set Frame Rate: %f, result: %d", new_config.frame_rate, ret);
   }
 
   uvc_set_status_callback(devh_, &StereoDriver::AutoControlsCallbackAdapter, this);
@@ -551,4 +555,51 @@ bool StereoDriver::GetStreamMode(libuvc_camera::GetStreamMode::Request &req,
     return true;
   }
 }
+
+bool StereoDriver::SetFrameRate(libuvc_camera::SetFrameRate::Request &req,
+                                libuvc_camera::SetFrameRate::Response &res)
+{
+  ROS_INFO("%s: HID Handle=%d, HID Device=%s", __func__, hid_fd_, hid_device_.c_str());
+  ROS_INFO("Frame Rate Requested: %u", req.frame_rate);
+  
+  res.result = SetFrameRateValue(&hid_fd_, req.frame_rate);
+  if(res.result == PASS)
+  {
+    ROS_INFO("Frame Rate successfully set.");
+  }
+  else if(res.result == OUT_OF_RANGE)
+  {
+    ROS_WARN("Requested frame rate is out of range");
+  }
+  else
+  {
+    ROS_ERROR("%s failed", __func__);
+  }
+  return true;
+} 
+
+bool StereoDriver::GetFrameRate(libuvc_camera::GetFrameRate::Request &req,
+                                libuvc_camera::GetFrameRate::Response &res)
+{
+  ROS_INFO("%s: HID Handle=%d, HID Device=%s", __func__, hid_fd_, hid_device_.c_str());
+  
+  uint32_t frame_rate;
+  res.result = GetFrameRateValue(&hid_fd_, &frame_rate);
+  if(res.result == PASS)
+  {
+    res.frame_rate = frame_rate;
+    ROS_INFO("Frame Rate Returned: %u", res.frame_rate);
+    return true;
+  }
+  else
+  {
+    ROS_ERROR("%s failed", __func__);
+    return false;
+  }
+} 
+
+
+
+
+
 };

@@ -140,7 +140,7 @@ int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen)
                 | ( ((UINT32)g_in_packet_buf[2]) << 16) 
                 | ( ((UINT32)g_in_packet_buf[1]) << 24) ); 
 
-        sprintf(pSN, "%d", iBaseBoardSerialNumber);
+        XUNIT_DEBUG(pSN, "%d", iBaseBoardSerialNumber);
         strcat(pSN, "\0");
         timeout = FALSE;
       }
@@ -403,6 +403,7 @@ int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure)
   memset(g_out_packet_buf, 0x00, sizeof(g_out_packet_buf));
   
   //Set the Report Number
+  g_out_packet_buf[0] = WHILL_CAMERA_CONTROL; /* Report Number */
   g_out_packet_buf[1] = GETTRIGGERMODE; /* Report Number */
   
   /* Send a Report to the Device */
@@ -424,12 +425,13 @@ int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure)
       // perror("read");
     } else {
       XUNIT_DEBUG("%s(): read %d bytes:", __func__,ret);
-      if(g_in_packet_buf[0] == GETTRIGGERMODE ){
-        if(g_in_packet_buf[3] == FAILURE) {
+      if(g_in_packet_buf[0] == WHILL_CAMERA_CONTROL &&
+         g_in_packet_buf[1] == GETTRIGGERMODE ){
+        if(g_in_packet_buf[4] == FAILURE) {
           return FAIL;
         } else {
-          *mode = g_in_packet_buf[1];
-          *exposure = g_in_packet_buf[2];
+          *mode = g_in_packet_buf[2];
+          *exposure = g_in_packet_buf[3];
           timeout = FALSE;
         } 
       }
@@ -520,7 +522,362 @@ int Trigger_Mode (uint32_t *g_Handle)
     return HIGH_SPEED;
 }
 
+/*
+  **********************************************************************************************************
+ *  MODULE TYPE	:	LIBRAY API 									    *
+ *  Name	    :	ReadFrameRateValue								    *
+ *  Parameter1	:	uint32_t *g_Handle								    *
+ *  Parameter2	:	uint8_t *Value									    *
+ *  Returns	    :	int (PASS or FAIL)								    *
+ *  Description	:   This function is used to get the FrameRate value of the camera.
+  **********************************************************************************************************
+*/
+int GetFrameRateValue (uint32_t *g_Handle, uint32_t *Value)
+{
+	BOOL timeout = TRUE;
+	int ret = 0;
+	unsigned int start, end = 0;
 
+    if(*g_Handle <= 0) {
+        return FAIL;
+    }
+	
+	//Initialize the buffer
+	memset(g_out_packet_buf, 0x00, sizeof(g_out_packet_buf));
+
+	//Set the Report Number
+	g_out_packet_buf[1] = WHILL_CAMERA_CONTROL; /* Report Number */
+	g_out_packet_buf[2] = FRAMERATECONTROL;
+	g_out_packet_buf[3] = GETFRAMERATE; 	/* Report Number */
+
+	/* Send a Report to the Device */
+	ret = write(*g_Handle, g_out_packet_buf, BUFFER_LENGTH);
+	if (ret < 0) {
+		perror("write");
+		return FAIL;
+	} else {
+		XUNIT_DEBUG("%s(): wrote %d bytes\n", __func__,ret);
+	}
+    
+	/* Read the Trigger Mode status from the device */
+	start = GetTickCount();
+	while(timeout) 
+	{	
+		/* Get a report from the device */
+		ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
+		if (ret < 0) {
+			//perror("read");
+		} else {
+			XUNIT_DEBUG("%s(): read %d bytes:\n", __func__,ret);
+			if(g_in_packet_buf[0] == WHILL_CAMERA_CONTROL &&
+			    g_in_packet_buf[1] == FRAMERATECONTROL &&
+			    g_in_packet_buf[2] == GETFRAMERATE ) {
+					if(g_in_packet_buf[4] == SET_FAIL) {
+						return FAIL;
+					} else if(g_in_packet_buf[4]== SET_TRUE) {
+						*Value = g_in_packet_buf[3];
+						timeout = FALSE;
+					}
+			}
+	 	}
+		end = GetTickCount();
+		if(end - start > TIMEOUT)
+		{
+			XUNIT_DEBUG("%s(): Timeout occurred\n", __func__);
+			timeout = FALSE;
+			return FAIL;
+		}		
+	}
+	return PASS;
+	
+}
+
+/*
+  **********************************************************************************************************
+ *  MODULE TYPE	:	LIBRAY API 									    *
+ *  Name	    :	WriteFrameRateValue								    *
+ *  Parameter1	:	uint32_t *g_Handle								    *
+ *  Parameter2	:	uint8_t Value									    *
+ *  Returns	    :	int (PASS or FAIL)								    *
+ *  Description	:   This function is used to get the frame rate  value of the camera.			    *
+  **********************************************************************************************************
+*/
+int SetFrameRateValue (uint32_t *g_Handle, uint32_t Value)
+{
+	BOOL timeout = TRUE;
+	int ret = 0;
+	unsigned int start, end = 0;
+
+  if(*g_Handle <= 0) {
+      return FAIL;
+  }
+	
+	//Initialize the buffer
+	memset(g_out_packet_buf, 0x00, sizeof(g_out_packet_buf));
+
+	//Set the Report Number
+	g_out_packet_buf[1] = WHILL_CAMERA_CONTROL; /* Report Number */
+	g_out_packet_buf[2] = FRAMERATECONTROL;
+	g_out_packet_buf[3] = SETFRAMERATE; 	/* Report Number */
+	g_out_packet_buf[4] = Value;
+
+	/* Send a Report to the Device */
+	ret = write(*g_Handle, g_out_packet_buf, BUFFER_LENGTH);
+	if (ret < 0) {
+		perror("write");
+		return FAIL;
+	} else {
+		XUNIT_DEBUG("%s(): wrote %d bytes\n", __func__,ret);
+	}
+    
+	/* Read the Trigger Mode status from the device */
+	start = GetTickCount();
+	while(timeout) 
+	{	
+		/* Get a report from the device */
+		ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
+		if (ret < 0) {
+			//perror("read");
+		} else {
+			XUNIT_DEBUG("%s(): read %d bytes:  Framerate = %d\n", __func__,ret,Value);
+			if(g_in_packet_buf[0] == WHILL_CAMERA_CONTROL &&
+			    g_in_packet_buf[1] == FRAMERATECONTROL &&
+			    g_in_packet_buf[2] == SETFRAMERATE) {
+
+					if(g_in_packet_buf[4] == SET_FAIL) {
+						return FAIL;
+					} else if(g_in_packet_buf[4]== SET_TRUE) {
+						timeout = FALSE;
+					}else if(g_in_packet_buf[4]== OUT_OF_RANGE) {
+						timeout = FALSE;
+					}
+			}
+	 	}
+		end = GetTickCount();
+		if(end - start > TIMEOUT)
+		{
+			XUNIT_DEBUG("%s(): Timeout occurred\n", __func__);
+			timeout = FALSE;
+			return FAIL;
+		}		
+	}
+	if(g_in_packet_buf[4]== SET_TRUE)
+		return PASS;
+	else if(g_in_packet_buf[4]== OUT_OF_RANGE)
+		return OUT_OF_RANGE;
+}
+
+
+
+/*
+  **********************************************************************************************************
+ *  MODULE TYPE	:	LIBRAY API 									    *
+ *  Name	    :	ReadFrameRateValue								    *
+ *  Parameter1	:	uint32_t *g_Handle								    *
+ *  Parameter2	:	uint8_t *Value									    *
+ *  Returns	    :	int (PASS or FAIL)								    *
+ *  Description	:   This function is used to get the Maximum FrameRate value of the camera.
+  **********************************************************************************************************
+*/
+int GetMaximumFrameRateValue (uint32_t *g_Handle, uint32_t *Value)
+{
+	BOOL timeout = TRUE;
+	int ret = 0;
+	unsigned int start, end = 0;
+
+    if(*g_Handle <= 0) {
+        return FAIL;
+    }
+	
+	//Initialize the buffer
+	memset(g_out_packet_buf, 0x00, sizeof(g_out_packet_buf));
+
+	//Set the Report Number
+	g_out_packet_buf[1] = WHILL_CAMERA_CONTROL; /* Report Number */
+	g_out_packet_buf[2] = FRAMERATECONTROL;
+	g_out_packet_buf[3] = GETMAXIMUMFRAMERATE; 	/* Report Number */
+
+	/* Send a Report to the Device */
+	ret = write(*g_Handle, g_out_packet_buf, BUFFER_LENGTH);
+	if (ret < 0) {
+		perror("write");
+		return FAIL;
+	} else {
+		XUNIT_DEBUG("%s(): wrote %d bytes\n", __func__,ret);
+	}
+    
+	/* Read the Trigger Mode status from the device */
+	start = GetTickCount();
+	while(timeout) 
+	{	
+		/* Get a report from the device */
+		ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
+		if (ret < 0) {
+			//perror("read");
+		} else {
+			XUNIT_DEBUG("%s(): read %d bytes:\n", __func__,ret);
+			if(g_in_packet_buf[0] == WHILL_CAMERA_CONTROL &&
+			    g_in_packet_buf[1] == FRAMERATECONTROL &&
+			    g_in_packet_buf[2] == GETMAXIMUMFRAMERATE ) {
+					if(g_in_packet_buf[4] == SET_FAIL) {
+						return FAIL;
+					} else if(g_in_packet_buf[4]== SET_TRUE) {
+						*Value = g_in_packet_buf[3];
+						timeout = FALSE;
+					}
+			}
+	 	}
+		end = GetTickCount();
+		if(end - start > TIMEOUT)
+		{
+			XUNIT_DEBUG("%s(): Timeout occurred\n", __func__);
+			timeout = FALSE;
+			return FAIL;
+		}		
+	}
+	return PASS;
+	
+}
+
+/*
+  **********************************************************************************************************
+ *  MODULE TYPE	:	LIBRAY API 									    *
+ *  Name	    :	ReadFrameRateValue								    *
+ *  Parameter1	:	uint32_t *g_Handle								    *
+ *  Parameter2	:	uint8_t *Value									    *
+ *  Returns	    :	int (PASS or FAIL)								    *
+ *  Description	:   This function is used to get the Minimum FrameRate value of the camera.
+  **********************************************************************************************************
+*/
+int GetMinimumFrameRateValue (uint32_t *g_Handle, uint32_t *Value)
+{
+	BOOL timeout = TRUE;
+	int ret = 0;
+	unsigned int start, end = 0;
+
+    if(*g_Handle <= 0) {
+        return FAIL;
+    }
+	
+	//Initialize the buffer
+	memset(g_out_packet_buf, 0x00, sizeof(g_out_packet_buf));
+
+	//Set the Report Number
+	g_out_packet_buf[1] = WHILL_CAMERA_CONTROL; /* Report Number */
+	g_out_packet_buf[2] = FRAMERATECONTROL;
+	g_out_packet_buf[3] = GETMINIMUMFRAMERATE; 	/* Report Number */
+
+	/* Send a Report to the Device */
+	ret = write(*g_Handle, g_out_packet_buf, BUFFER_LENGTH);
+	if (ret < 0) {
+		perror("write");
+		return FAIL;
+	} else {
+		XUNIT_DEBUG("%s(): wrote %d bytes\n", __func__,ret);
+	}
+    
+	/* Read the Trigger Mode status from the device */
+	start = GetTickCount();
+	while(timeout) 
+	{	
+		/* Get a report from the device */
+		ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
+		if (ret < 0) {
+			//perror("read");
+		} else {
+			XUNIT_DEBUG("%s(): read %d bytes:\n", __func__,ret);
+			if(g_in_packet_buf[0] == WHILL_CAMERA_CONTROL &&
+			    g_in_packet_buf[1] == FRAMERATECONTROL &&
+			    g_in_packet_buf[2] == GETMINIMUMFRAMERATE ) {
+					if(g_in_packet_buf[4] == SET_FAIL) {
+						return FAIL;
+					} else if(g_in_packet_buf[4]== SET_TRUE) {
+						*Value = g_in_packet_buf[3];
+						timeout = FALSE;
+					}
+			}
+	 	}
+		end = GetTickCount();
+		if(end - start > TIMEOUT)
+		{
+			XUNIT_DEBUG("%s(): Timeout occurred\n", __func__);
+			timeout = FALSE;
+			return FAIL;
+		}		
+	}
+	return PASS;
+	
+}
+
+/*
+  **********************************************************************************************************
+ *  MODULE TYPE	:	LIBRAY API 									    *
+ *  Name	    :	ReadFrameRateValue								    *
+ *  Parameter1	:	uint32_t *g_Handle								    *
+ *  Parameter2	:	uint8_t *Value									    *
+ *  Returns	    :	int (PASS or FAIL)								    *
+ *  Description	:   This function is used to get the DEFAULT FrameRate value of the camera.
+  **********************************************************************************************************
+*/
+int GetDefaultFrameRateValue (uint32_t *g_Handle, uint32_t *Value)
+{
+	BOOL timeout = TRUE;
+	int ret = 0;
+	unsigned int start, end = 0;
+
+    if(*g_Handle <= 0) {
+        return FAIL;
+    }
+	
+	//Initialize the buffer
+	memset(g_out_packet_buf, 0x00, sizeof(g_out_packet_buf));
+
+	//Set the Report Number
+	g_out_packet_buf[1] = WHILL_CAMERA_CONTROL; /* Report Number */
+	g_out_packet_buf[2] = FRAMERATECONTROL;
+	g_out_packet_buf[3] = GETDEFAULTFRAMERATE; 	/* Report Number */
+
+	/* Send a Report to the Device */
+	ret = write(*g_Handle, g_out_packet_buf, BUFFER_LENGTH);
+	if (ret < 0) {
+		perror("write");
+		return FAIL;
+	} else {
+		XUNIT_DEBUG("%s(): wrote %d bytes\n", __func__,ret);
+	}
+    
+	/* Read the Trigger Mode status from the device */
+	start = GetTickCount();
+	while(timeout) 
+	{	
+		/* Get a report from the device */
+		ret = read(*g_Handle, g_in_packet_buf, BUFFER_LENGTH);
+		if (ret < 0) {
+			//perror("read");
+		} else {
+			XUNIT_DEBUG("%s(): read %d bytes:\n", __func__,ret);
+			if(g_in_packet_buf[0] == WHILL_CAMERA_CONTROL &&
+			    g_in_packet_buf[1] == FRAMERATECONTROL &&
+			    g_in_packet_buf[2] == GETDEFAULTFRAMERATE ) {
+					if(g_in_packet_buf[4] == SET_FAIL) {
+						return FAIL;
+					} else if(g_in_packet_buf[4]== SET_TRUE) {
+						*Value = g_in_packet_buf[3];
+						timeout = FALSE;
+					}
+			}
+	 	}
+		end = GetTickCount();
+		if(end - start > TIMEOUT)
+		{
+			XUNIT_DEBUG("%s(): Timeout occurred\n", __func__);
+			timeout = FALSE;
+			return FAIL;
+		}		
+	}
+	return PASS;
+	
+}
 /*
  **********************************************************************************************************
  *  MODULE TYPE	:	LIBRAY API 									    *
@@ -584,7 +941,7 @@ uint32_t InitExtensionUnit(const char *serial)
     #if XUNIT_DEBUGGING
     XUNIT_DEBUG("Report Descriptors:");
     for (i = 0; i < rpt_desc.size; i++)
-      printf("%hhx ", rpt_desc.value[i]);
+      XUNIT_DEBUG("%hhx ", rpt_desc.value[i]);
     puts("\n");
     #endif
   }

@@ -96,6 +96,16 @@ int Trigger_Mode (uint32_t *g_Handle);
 
 int Get_Trigger_Mode (uint32_t *g_Handle, int *mode , int *exposure);
 
+int GetFrameRateValue (uint32_t *g_Handle, uint32_t *Value);
+
+int SetFrameRateValue (uint32_t *g_Handle, uint32_t Value);
+
+int GetMaximumFrameRateValue (uint32_t *g_Handle, uint32_t *Value);
+
+int GetMinimumFrameRateValue (uint32_t *g_Handle, uint32_t *Value);
+
+int GetDefaultFrameRateValue (uint32_t *g_Handle, uint32_t *Value);
+
 int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen);
 
 

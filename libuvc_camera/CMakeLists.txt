@@ -25,6 +25,8 @@ add_service_files(
   SetStreamMode.srv
   GetStreamMode.srv
   GetFirmwareVersion.srv
+  SetFrameRate.srv 
+  GetFrameRate.srv
 )
 
 generate_messages(

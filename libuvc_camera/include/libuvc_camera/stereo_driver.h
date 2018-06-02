@@ -13,6 +13,8 @@
 #include "libuvc_camera/SetStreamMode.h"
 #include "libuvc_camera/GetStreamMode.h"
 #include "libuvc_camera/GetFirmwareVersion.h"
+#include "libuvc_camera/GetFrameRate.h"
+#include "libuvc_camera/SetFrameRate.h"
 
 namespace libuvc_camera {
 
@@ -65,7 +67,10 @@ private:
                           libuvc_camera::GetFirmwareVersion::Response &res);
   bool GetStreamMode(libuvc_camera::GetStreamMode::Request &req,
                      libuvc_camera::GetStreamMode::Response &res);
-
+  bool SetFrameRate(libuvc_camera::SetFrameRate::Request &req,
+                    libuvc_camera::SetFrameRate::Response &res);
+  bool GetFrameRate(libuvc_camera::GetFrameRate::Request &req,
+                    libuvc_camera::GetFrameRate::Response &res);
   ros::NodeHandle nh_, priv_nh_;
 
   State state_;
@@ -86,7 +91,7 @@ private:
   UVCCameraConfig config_;
   bool config_changed_;
 
-  ros::ServiceServer set_stream_srv_, get_stream_srv_, get_fwver_srv_;
+  ros::ServiceServer set_stream_srv_, get_stream_srv_, get_fwver_srv_, set_frame_rate_srv_, get_frame_rate_srv_;
 
   camera_info_manager::CameraInfoManager cinfo_manager_;
 };
