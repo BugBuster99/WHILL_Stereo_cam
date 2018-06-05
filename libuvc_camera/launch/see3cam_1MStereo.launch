@@ -27,6 +27,8 @@
     <remap from="set_stream_mode" to="$(arg node_name)/set_stream_mode"/>
     <remap from="get_stream_mode" to="$(arg node_name)/get_stream_mode"/>
     <remap from="get_firmware_version" to="$(arg node_name)/get_firmware_version"/>
+    <remap from="set_frame_rate" to="$(arg node_name)/set_frame_rate"/>
+    <remap from="get_frame_rate" to="$(arg node_name)/get_frame_rate"/>
     <!-- Parameters used to find the camera -->
     <param name="vendor" value="$(arg vendor)"/>
     <param name="product" value="$(arg product)"/>
