@@ -435,7 +435,7 @@ void StereoDriver::OpenCamera(UVCCameraConfig &new_config) {
     g_FWver_t fwversion = {0};
     int ret = ReadFirmwareVersion (&hid_fd_, &fwversion);
     ROS_INFO("Firmware Version: %d.%d.%d.%d", fwversion.pMajorVersion, fwversion.pMinorVersion1, fwversion.pMinorVersion2, fwversion.pMinorVersion3);
-    ret = SetFrameRateValue(&hid_fd_, static_cast<uint32_t>(new_config.frame_rate));
+    ret = SetFrameRateValue(&hid_fd_, 15);
     ROS_INFO("Set Frame Rate: %f, result: %d", new_config.frame_rate, ret);
   }
 
