@@ -241,8 +241,10 @@ void StereoDriver::ImageCallback(uvc_frame_t *frame) {
 
   image->header.frame_id = config_.frame_id;
   image->header.stamp = timestamp;
+  image->header.seq = frame->sequence;
   cinfo->header.frame_id = config_.frame_id;
   cinfo->header.stamp = timestamp;
+  cinfo->header.seq = frame->sequence;
 
   cam_pub_.publish(image, cinfo);
 
