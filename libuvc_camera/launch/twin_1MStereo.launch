@@ -5,11 +5,10 @@
   <arg name="right_ns" default="right_cam" />
   <arg name="left_ns"  default="left_cam" />
 
-  <arg name="left_left_eye_serial"   default="0E27450B"/>
-  <arg name="left_right_eye_serial"  default="262E450B"/>
-  <arg name="right_left_eye_serial"   default="16114F0B"/>
-  <arg name="right_right_eye_serial"  default="1021450B"/>
-  <arg name="nodelet_manager" default="/manager" />
+  <arg name="right_left_eye_serial"   default="36234D0B"/>
+  <arg name="right_right_eye_serial"  default="1125450B"/>
+  <arg name="left_left_eye_serial"   default="16114F0B"/>
+  <arg name="left_right_eye_serial"  default="1021450B"/>
   <arg name="left_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_left.yaml"/>
   <arg name="right_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_right.yaml"/>
 
