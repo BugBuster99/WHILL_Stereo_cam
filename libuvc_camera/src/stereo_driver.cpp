@@ -225,6 +225,9 @@ void StereoDriver::ImageCallback(uvc_frame_t *frame) {
   } else if (frame->frame_format == UVC_FRAME_FORMAT_GRAY8) {
     image->encoding = "mono8";
     memcpy(&(image->data[0]), frame->data, image->width * image->height);
+  } else if (frame->frame_format == UVC_FRAME_FORMAT_SGRBG8) {
+    image->encoding = "bayer_grbg8";
+    memcpy(&(image->data[0]), frame->data, image->width * image->height);
   } else {
     uvc_error_t conv_ret = uvc_any2bgr(frame, rgb_frame_);
     if (conv_ret != UVC_SUCCESS) {
@@ -317,21 +320,25 @@ void StereoDriver::AutoControlsCallback(
 
 enum uvc_frame_format StereoDriver::GetVideoMode(std::string vmode){
   if(vmode == "uncompressed") {
-    return UVC_COLOR_FORMAT_UNCOMPRESSED;
+    return UVC_FRAME_FORMAT_UNCOMPRESSED;
   } else if (vmode == "compressed") {
-    return UVC_COLOR_FORMAT_COMPRESSED;
+    return UVC_FRAME_FORMAT_COMPRESSED;
   } else if (vmode == "yuyv") {
-    return UVC_COLOR_FORMAT_YUYV;
+    return UVC_FRAME_FORMAT_YUYV;
   } else if (vmode == "uyvy") {
-    return UVC_COLOR_FORMAT_UYVY;
+    return UVC_FRAME_FORMAT_UYVY;
   } else if (vmode == "rgb") {
-    return UVC_COLOR_FORMAT_RGB;
+    return UVC_FRAME_FORMAT_RGB;
   } else if (vmode == "bgr") {
-    return UVC_COLOR_FORMAT_BGR;
+    return UVC_FRAME_FORMAT_BGR;
   } else if (vmode == "mjpeg") {
-    return UVC_COLOR_FORMAT_MJPEG;
+    return UVC_FRAME_FORMAT_MJPEG;
   } else if (vmode == "gray8") {
-    return UVC_COLOR_FORMAT_GRAY8;
+    return UVC_FRAME_FORMAT_GRAY8;
+  } else if (vmode == "by8") {
+    return UVC_FRAME_FORMAT_BY8;
+  } else if (vmode == "sgrbg") {
+    return UVC_FRAME_FORMAT_SGRBG8;
   } else {
     ROS_ERROR_STREAM("Invalid Video Mode: " << vmode);
     ROS_WARN_STREAM("Continue using video mode: uncompressed");
