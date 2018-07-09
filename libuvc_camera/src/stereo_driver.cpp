@@ -182,7 +182,8 @@ void StereoDriver::ImageCallback(uvc_frame_t *frame) {
   sensor_msgs::Image::Ptr image(new sensor_msgs::Image());
   image->width = config_.width;
   image->height = config_.height;
-  if(frame->frame_format == UVC_FRAME_FORMAT_GRAY8)
+  if(frame->frame_format == UVC_FRAME_FORMAT_GRAY8 ||
+     frame->frame_format == UVC_FRAME_FORMAT_SGRBG8)
   {
     image->step = image->width;
   }
