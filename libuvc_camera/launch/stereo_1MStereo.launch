@@ -17,7 +17,7 @@
   <arg name="timestamp_method" default="start"/>
   <arg name="auto_exposure" default="3"/>
   <arg name="auto_white_balance" default="false" />
-  <arg name="exposure_absolute" default="0.0030"/>
+  <arg name="exposure_absolute" default="0.0040"/>
 
 
   <!-- ===== Left Master ===== -->
