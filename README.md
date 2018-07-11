@@ -9,8 +9,15 @@ Documentation is available on the ROS wiki: [libuvc_camera](http://wiki.ros.org/
 
 ## How to launch e-con camera
 **NOTE**: Right eye camera (SEE3CAM 1MSTEREO xxx_R_SLAVE) requires trigger signal from left eye camera (SEE3CAM 1MSTEREO xxx_L_MASTER). Thus, "right-eye only" mode is not available. If you want to use the camera as a mono-eye camera, you must use left eye camera.
-### Retrieve camera's serial number
-1. Get Bus ID and Device ID of the camera by lsusb. e-con's vendor ID is `2560` and product ID is `c110` (monochrome) or `c111` (color).
+
+#### Copy udev file to /etc/udev/rules.d
+Execute the following command and replug your e-con camera in order to make the copied udev rule effective.
+```bash
+$ sudo cp ~/catkin_ws/src/libuvc_ros/libuvc_camera/udev/95-econ.rule /etc/udev/rules.d
+```
+
+#### Get Bus ID and Device ID of the camera by lsusb
+e-con's vendor ID is `2560` and product ID is `c110` (monochrome) or `c111` (color).
 For the following example, `Bus 002 Device 004`, `Bus 002 Device 007`, `Bus 002 Device 005`, and `Bus 002 Device 006` indicate all four camera sensors (two eyes for each arm = total four). 
 ```bash
 $ lsusb
@@ -29,7 +36,7 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 ```
 
 
-1. Get serial number of each camera.
+#### Get serial number of each camera
 Type `lsusb -v -s XXX:YYY` (XXX = Bus ID, YYY = Device ID), and read `iSerial`.
 ```bash
 $ lsusb -v -s 002:004
@@ -52,12 +59,8 @@ Device Descriptor:
   bNumConfigurations      1
 ```
 
-1. Copy udev file to /etc/udev/rules.d
-```bash
-$ sudo cp ~/catkin_ws/src/libuvc_ros/libuvc_camera/udev/95-econ.rule /etc/udev/rules.d
-```
 
-1. Launch camera by see3cam
+#### Launch camera
 Launch `see3cam_1MStereo.launch`, ZZZZZZZZ is the serial number you obtained in previous step.
 
 - For Monochrome Camera
