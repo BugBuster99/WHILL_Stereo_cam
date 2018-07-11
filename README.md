@@ -29,6 +29,26 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 
 
 1. Get serial number of each camera 
+Type `lsusb -v -s XXX:YYY` (XXX = Bus ID, YYY = Device ID), and read `iSerial`
 ```bash
-lsusb -v -s XXX:YYY
+$lsusb -v -s 002:004
+
+Bus 002 Device 004: ID 2560:c110  
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               3.00
+  bDeviceClass          239 Miscellaneous Device
+  bDeviceSubClass         2 ?
+  bDeviceProtocol         1 Interface Association
+  bMaxPacketSize0         9
+  idVendor           0x2560 
+  idProduct          0xc110 
+  bcdDevice            0.00
+  iManufacturer           1 e-con Systems
+  iProduct                2 SEE3CAM 1MSTEREO MONO_L_MASTER
+  iSerial                 3 16114F0B
+  bNumConfigurations      1
+
+
 ```
