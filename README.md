@@ -55,3 +55,9 @@ Device Descriptor:
 ```bash
 $ sudo cp ~/catkin_ws/src/libuvc_ros/libuvc_camera/udev/95-econ.rule /etc/udev/rules.d
 ```
+
+1. Launch camera by see3cam
+Launch `see3cam_1MStereo.launch`, ZZZZZZZZ is the serial number you obtained in previous step.
+```bash
+$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ
+```
