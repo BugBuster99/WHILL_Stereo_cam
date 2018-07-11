@@ -10,7 +10,6 @@
   <arg name="right_eye_serial"  default="262E450B"/>
   <arg name="left_eye_node_name"  default="left_master" />
   <arg name="right_eye_node_name" default="right_slave" />
-  <arg name="nodelet_manager" default="/manager" />
 
   <arg name="video_mode" default="uncompressed" />
   <arg name="camera_info_url" default="$(env ROS_HOME)/camera_info/tara_param_right.yaml"/>
@@ -19,6 +18,11 @@
   <arg name="auto_white_balance" default="false" />
   <arg name="exposure_absolute" default="0.0020"/>
 
+  <arg name="root_nodelet_manager" default="" />
+  <arg name="is_manager_inherited" value="$(eval root_nodelet_manager == '')"/>
+  <arg name="nodelet_manager" value="/manager" if="$(arg is_manager_inherited)" />
+  <arg name="nodelet_manager" value="$(arg root_nodelet_manager)" unless="$(arg is_manager_inherited)"/>
+  <node pkg="nodelet" type="nodelet" name="manager" args="manager" output="screen" if="$(arg is_manager_inherited)" />
 
   <!-- ===== Left Master ===== -->
   <include file="$(find libuvc_camera)/launch/see3cam_1MStereo.launch">
