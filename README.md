@@ -8,6 +8,7 @@ Documentation is available on the ROS wiki: [libuvc_camera](http://wiki.ros.org/
 
 
 ## How to launch e-con camera
+**NOTE**: Right eye camera (SEE3CAM 1MSTEREO xxx_R_SLAVE) requires trigger signal from left eye camera (SEE3CAM 1MSTEREO xxx_L_MASTER). Thus, "right-eye only" mode is not available. If you want to use the camera as a mono-eye camera, you must use left eye camera.
 ### Retrieve camera's serial number
 1. Get Bus ID and Device ID of the camera by lsusb. e-con's vendor ID is `2560` and product ID is `c110` (monochrome) or `c111` (color).
 For the following example, `Bus 002 Device 004`, `Bus 002 Device 007`, `Bus 002 Device 005`, and `Bus 002 Device 006` indicate all four camera sensors (two eyes for each arm = total four). 
@@ -28,8 +29,8 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 ```
 
 
-1. Get serial number of each camera 
-Type `lsusb -v -s XXX:YYY` (XXX = Bus ID, YYY = Device ID), and read `iSerial`
+1. Get serial number of each camera.
+Type `lsusb -v -s XXX:YYY` (XXX = Bus ID, YYY = Device ID), and read `iSerial`.
 ```bash
 $ lsusb -v -s 002:004
 
@@ -58,6 +59,12 @@ $ sudo cp ~/catkin_ws/src/libuvc_ros/libuvc_camera/udev/95-econ.rule /etc/udev/r
 
 1. Launch camera by see3cam
 Launch `see3cam_1MStereo.launch`, ZZZZZZZZ is the serial number you obtained in previous step.
+
+- For Monochrome Camera
 ```bash
-$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ
+$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ product="0xc110" video_mode="uncompressed"
+```
+- For Color Camera
+```bash
+$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ product="0xc111" video_mode="sgrbg"
 ```
