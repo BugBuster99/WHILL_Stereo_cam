@@ -31,7 +31,7 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 1. Get serial number of each camera 
 Type `lsusb -v -s XXX:YYY` (XXX = Bus ID, YYY = Device ID), and read `iSerial`
 ```bash
-$lsusb -v -s 002:004
+$ lsusb -v -s 002:004
 
 Bus 002 Device 004: ID 2560:c110  
 Device Descriptor:
@@ -49,6 +49,9 @@ Device Descriptor:
   iProduct                2 SEE3CAM 1MSTEREO MONO_L_MASTER
   iSerial                 3 16114F0B
   bNumConfigurations      1
+```
 
-
+1. Copy udev file to /etc/udev/rules.d
+```bash
+$ sudo cp ~/catkin_ws/src/libuvc_ros/libuvc_camera/udev/95-econ.rule /etc/udev/rules.d
 ```
