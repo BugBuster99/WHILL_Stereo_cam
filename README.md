@@ -82,38 +82,39 @@ Launch `see3cam_1MStereo.launch` as follows. ZZZZZZZZ is the serial number you o
 
 - For Monochrome Camera
 ```bash
-$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ product="0xc110" video_mode="uncompressed"
+$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ product:="0xc110" video_mode:="uncompressed" fps:=54
 ```
 - For Color Camera
 ```bash
-$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ product="0xc111" video_mode="sgrbg"
+$ roslaunch libuvc_camera see3cam_1MStereo.launch serial:=ZZZZZZZZ product:="0xc111" video_mode:="sgrbg" fps:=54
 ```
 
 #### Launch a stereo-pair on a single board
 Launch `stereo_1MStereo.launch` as follows. LLLLLLLL is the left eye serial and RRRRRRRR is the right eye serial.
 - For Monochrome Camera
 ```bash
-$ roslaunch libuvc_camera stereo_1MStereo.launch left_eye_serial:=LLLLLLLL right_eye_serial:=RRRRRRRR product="0xc110" video_mode="uncompressed"
+$ roslaunch libuvc_camera stereo_1MStereo.launch left_eye_serial:=LLLLLLLL right_eye_serial:=RRRRRRRR product:="0xc110" video_mode:="uncompressed" fps:=54
 ```
 - For Color Camera
 ```bash
-$ roslaunch libuvc_camera stereo_1MStereo.launch left_eye_serial:=LLLLLLLL right_eye_serial:=RRRRRRRR product="0xc111" video_mode="sgrbg"
+$ roslaunch libuvc_camera stereo_1MStereo.launch left_eye_serial:=LLLLLLLL right_eye_serial:=RRRRRRRR product:="0xc111" video_mode:="sgrbg" fps:=54
 ```
 
 #### Launch stereo-pairs on left & right arms
 Launch `twin_1MStereo.launch` as follows. LLLLLLLL is the left arm's left eye, LLLLRRRR is the left arm's right eye, RRRRLLLL is the right arm's left eye, and RRRRRRRR is the right arm's right eye.
 - For Monochrome Camera
 ```bash
-$ roslaunch libuvc_camera twin_1MStereo.launch left_left_eye_serial:=LLLLLLLL left_right_eye_serial:=LLLLRRRR right_left_eye_serial:=RRRRLLLL right_right_eye_serial:=RRRRRRRR product="0xc110" video_mode="uncompressed"
+$ roslaunch libuvc_camera twin_1MStereo.launch left_left_eye_serial:=LLLLLLLL left_right_eye_serial:=LLLLRRRR right_left_eye_serial:=RRRRLLLL right_right_eye_serial:=RRRRRRRR product:="0xc110" video_mode:="uncompressed" fps:=54
 ```
 - For Color Camera
 ```bash
-$ roslaunch libuvc_camera twin_1MStereo.launch left_left_eye_serial:=LLLLLLLL left_right_eye_serial:=LLLLRRRR right_left_eye_serial:=RRRRLLLL right_right_eye_serial:=RRRRRRRR product="0xc111" video_mode="sgrbg"
+$ roslaunch libuvc_camera twin_1MStereo.launch left_left_eye_serial:=LLLLLLLL left_right_eye_serial:=LLLLRRRR right_left_eye_serial:=RRRRLLLL right_right_eye_serial:=RRRRRRRR product:="0xc111" video_mode:="sgrbg" fps:=54
 ```
 
 #### Edit 'default' serial number embedded in the launch files
 If you prefer, you can edit ['default' value of the serial numbers](https://github.com/WHILL/libuvc_ros/blob/b470398402b7cb517f25e7af83dd7ff1122cd084/libuvc_camera/launch/see3cam_1MStereo.launch#L9) in the launch file instead of providing numbers to roslaunch as an argument(s).
 
 ### Parameters
--`exposure_absolute` (double, default: 0.0030, min: 0.0001, max: 0.0100), exposure time im [sec]
+- `exposure_absolute` (double, default: 0.0030, min: 0.0001, max: 0.0100). exposure time in sec.
+- `fps` (double, default: 54). **NOT FLEXIBLE**. It is constrained by firmware version. Do NOT change unless specified.
 
