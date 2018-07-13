@@ -40,7 +40,7 @@
       <arg name="exposure_absolute" value="$(arg exposure_absolute)" />
       <arg name="left_eye_serial"   value="$(arg right_left_eye_serial)"/>
       <arg name="right_eye_serial"  value="$(arg right_right_eye_serial)"/>
-      <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+      <arg name="root_nodelet_manager" value="$(arg nodelet_manager)"/>
       <arg name="camera_info_url" value="$(arg right_camera_info_url)" />
     </include>
   </group>
@@ -53,7 +53,7 @@
       <arg name="exposure_absolute" value="$(arg exposure_absolute)" />
       <arg name="left_eye_serial"   value="$(arg left_left_eye_serial)"/>
       <arg name="right_eye_serial"  value="$(arg left_right_eye_serial)"/>
-      <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+      <arg name="root_nodelet_manager" value="$(arg nodelet_manager)"/>
       <arg name="camera_info_url" value="$(arg left_camera_info_url)" />
     </include>
   </group>
