@@ -32,7 +32,7 @@
     <arg name="product"         value="$(arg product)" />
     <arg name="serial"          value="$(arg left_eye_serial)"/>
     <arg name="node_name"       value="$(arg left_eye_node_name)"/>
-    <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+    <arg name="root_nodelet_manager" value="$(arg nodelet_manager)"/>
     <arg name="video_mode"      value="$(arg video_mode)"/>
     <arg name="auto_exposure"   value="$(arg auto_exposure)"/>
     <arg name="exposure_absolute" value="$(arg exposure_absolute)"/>
@@ -46,7 +46,7 @@
     <arg name="product"         value="$(arg product)" />
     <arg name="serial"          value="$(arg right_eye_serial)"/>
     <arg name="node_name"       value="$(arg right_eye_node_name)"/>
-    <arg name="nodelet_manager" value="$(arg nodelet_manager)"/>
+    <arg name="root_nodelet_manager" value="$(arg nodelet_manager)"/>
     <arg name="video_mode"      value="$(arg video_mode)"/>
     <arg name="auto_exposure"   value="$(arg auto_exposure)"/>
     <arg name="exposure_absolute" value="$(arg exposure_absolute)"/>
