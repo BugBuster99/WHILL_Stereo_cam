@@ -13,11 +13,12 @@ import cv2
 
 
 class ev_calculator:
-    def __init__(self, camera_node_name='left_master', brightness_tgt=128.0):
+    def __init__(self, camera_node_name='left_master', brightness_tgt=128.0, step_size=0.001):
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("src_image", Image, callback=self.img_callback)
         self.client = Client(camera_node_name, timeout=30, config_callback=self.config_callback)
         self.__brightness_tgt = brightness_tgt
+        self.__step_size = step_size
         rospy.loginfo("dynparam server name = %s", camera_node_name)
 
     def img_callback(self, msg):
@@ -32,12 +33,14 @@ class ev_calculator:
         params = self.client.get_configuration()
         old_exposure_absolute = params['exposure_absolute']
         new_exposure_absolute = pow(2.0, log(self.__brightness_tgt, 2) - log(brightness_pre, 2) + log(old_exposure_absolute, 2))
-        if fabs(new_exposure_absolute - old_exposure_absolute) > 0.05:
-            if new_exposure_absolute < old_exposure_absolute:
-                new_exposure_absolute = old_exposure_absolute - 0.05
-            else:
-                new_exposure_absolute = old_exposure_absolute + 0.05
         #new_exposure_absolute = old_exposure_absolute * self.__brightness_tgt / brightness_pre
+        if fabs(new_exposure_absolute - old_exposure_absolute) > self.__step_size:
+            if new_exposure_absolute < old_exposure_absolute:
+                new_exposure_absolute = old_exposure_absolute - self.__step_size 
+            else:
+                new_exposure_absolute = old_exposure_absolute + self.__step_size 
+        if new_exposure_absolute > 0.1:
+            new_exposure_absolute = 0.1
         rospy.loginfo("current brightness = %f", brightness_pre)
         #rospy.loginfo("tgt BL = %f", log(brightness_tgt, 2))
         #rospy.loginfo("log BL = %f", log(brightness_pre, 2))

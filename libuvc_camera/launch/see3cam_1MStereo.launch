@@ -58,11 +58,9 @@
     <param name="scanning_mode" value="$(arg scanning_mode)"/>
     <param name="auto_exposure_priority" value="$(arg auto_exposure_priority)"/>
   </node>
-<!--
   <node pkg="libuvc_camera" name="$(arg node_name)_auto_exposure_controller" type="auto_exposure.py" output="screen">
     <remap from="src_image" to="$(arg node_name)/image_raw"/>
     <param name="~camera_node_name" value="$(arg node_name)"/>
     <param name="~brightness_tgt" value="64.0"/>
   </node>
--->
 </launch>
