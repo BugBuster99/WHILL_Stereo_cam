@@ -61,6 +61,9 @@
   <node pkg="libuvc_camera" name="$(arg node_name)_auto_exposure_controller" type="auto_exposure.py" output="screen">
     <remap from="src_image" to="$(arg node_name)/image_raw"/>
     <param name="~camera_node_name" value="$(arg node_name)"/>
-    <param name="~brightness_tgt" value="64.0"/>
+    <param name="~brightness_tgt"   value="64.0"/>
+    <param name="~step_size"        value="0.05"/>
+    <param name="~update_interval"  value="5"/>
+    <param name="~max_exposure"     value="0.1"/>
   </node>
 </launch>

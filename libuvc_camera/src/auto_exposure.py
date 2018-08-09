@@ -13,14 +13,14 @@ import cv2
 
 
 class ev_calculator:
-    def __init__(self, camera_node_name='left_master', brightness_tgt=128.0, step_size=0.001, update_interval=5):
+    def __init__(self, camera_node_name='left_master', brightness_tgt=128.0, step_size=0.001, update_interval=5, max_exposure=0.1):
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("src_image", Image, callback=self.img_callback)
         self.client = Client(camera_node_name, timeout=30, config_callback=self.config_callback)
-        self.__brightness_tgt = brightness_tgt
-        self.__step_size = step_size
+        self.__brightness_tgt  = brightness_tgt
+        self.__step_size       = step_size
         self.__update_interval = update_interval
-        rospy.loginfo("dynparam server name = %s", camera_node_name)
+        self.__max_exposure    = max_exposure
 
     def img_callback(self, msg):
         if msg.header.seq % self.__update_interval == 0:
@@ -41,26 +41,29 @@ class ev_calculator:
                     new_exposure_absolute = old_exposure_absolute - self.__step_size 
                 else:
                     new_exposure_absolute = old_exposure_absolute + self.__step_size 
-            if new_exposure_absolute > 0.1:
-                new_exposure_absolute = 0.1
-            rospy.loginfo("current brightness = %f", brightness_pre)
+            if new_exposure_absolute > max_exposure:
+                new_exposure_absolute = max_exposure 
+            #rospy.loginfo("current brightness = %f", brightness_pre)
             #rospy.loginfo("tgt BL = %f", log(brightness_tgt, 2))
             #rospy.loginfo("log BL = %f", log(brightness_pre, 2))
-            rospy.loginfo("old EV = %f", old_exposure_absolute)
-            rospy.loginfo("new EV = %f", new_exposure_absolute)
+            #rospy.loginfo("old EV = %f", old_exposure_absolute)
+            #rospy.loginfo("new EV = %f", new_exposure_absolute)
 
             params['exposure_absolute'] = new_exposure_absolute
             self.client.update_configuration(params)
 
     def config_callback(self, config):
-        rospy.loginfo("exposure_absolute set to {exposure_absolute}".format(**config))
+        rospy.logdebug("exposure_absolute set to {exposure_absolute}".format(**config))
     
 
 if __name__ == "__main__":
     rospy.init_node("auto_exposure_controller")
     camera_node_name = rospy.get_param('~camera_node_name', 'left_master')
-    print camera_node_name
     brightness_tgt   = rospy.get_param('~brightness_tgt', 128.0)
-    calc = ev_calculator(camera_node_name, brightness_tgt)
+    step_size        = rospy.get_param('~step_size', 0.001)
+    update_interval  = rospy.get_param('~update_interval', 5)
+    max_exposure     = rospy.get_param('~max_exposure', 0.1)
+
+    calc = ev_calculator(camera_node_name, brightness_tgt, step_size, update_interval, max_exposure)
     while not rospy.is_shutdown():
         rospy.spin()
