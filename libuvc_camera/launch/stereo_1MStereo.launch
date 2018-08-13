@@ -60,7 +60,7 @@
     <arg name="right_eye_node_name" value="$(arg right_eye_node_name)"/>
   </include>
 
-  <node pkg="libuvc_camera" name="auto_exposure_controller" type="auto_exposure.py" output="screen">
+  <node pkg="libuvc_camera" name="master_ev_controller" type="auto_exposure_master.py" output="screen">
     <remap from="src_image" to="$(arg left_eye_node_name)/image_raw"/>
     <param name="~master_node_name" value="$(arg left_eye_node_name)"/>
     <param name="~slave_node_name"  value="$(arg right_eye_node_name)"/>
@@ -70,4 +70,7 @@
     <param name="~max_exposure"     value="0.1"/>
   </node>
 
+  <node pkg="libuvc_camera" name="slave_ev_controller" type="auto_exposure_slave.py" output="screen">
+    <param name="~master_node_name" value="$(arg left_eye_node_name)"/>
+  </node>
 </launch>
