@@ -7,8 +7,8 @@ from std_msgs.msg import Float32
 
 
 class ev_updater:
-    def __init__(self, slave_node_name='right_slave'):
-        self.client = Client(slave_node_name, timeout=30, config_callback=self.config_callback)
+    def __init__(self, node_name='right_slave'):
+        self.client = Client(node_name, timeout=30, config_callback=self.config_callback)
         self.ev_sub = rospy.Subscriber("exposure_absolute", Float32, callback=self.ev_callback)
 
     def ev_callback(self, msg):
@@ -22,8 +22,8 @@ class ev_updater:
 
 if __name__ == "__main__":
     rospy.init_node("auto_exposure_controller")
-    slave_node_name  = rospy.get_param('~slave_node_name', 'right_slave')
+    node_name = rospy.get_param('~node_name', 'right_slave')
 
-    calc = ev_updater(slave_node_name)
+    calc = ev_updater(node_name)
     while not rospy.is_shutdown():
         rospy.spin()

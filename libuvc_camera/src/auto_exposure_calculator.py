@@ -44,8 +44,6 @@ class ev_calculator:
             if new_exposure_absolute > max_exposure:
                 new_exposure_absolute = max_exposure 
 
-            self.params['exposure_absolute'] = new_exposure_absolute
-            self.client.update_configuration(self.params)
             self.ev_pub.publish(new_exposure_absolute)
     
     def config_callback(self, config):
