@@ -8,6 +8,7 @@ from std_msgs.msg import Float64
 
 class ev_updater:
     def __init__(self, node_name='right_slave'):
+        self.node_name = node_name
         self.client = Client(node_name, timeout=30, config_callback=self.config_callback)
         self.ev_sub = rospy.Subscriber("exposure_absolute", Float64, callback=self.ev_callback)
 
@@ -18,7 +19,7 @@ class ev_updater:
         self.client.update_configuration(self.params)
 
     def config_callback(self, config):
-        rospy.loginfo("Updater: exposure_absolute set to {exposure_absolute}".format(**config))
+        rospy.loginfo("{node_name}: exposure_absolute set to {exposure_absolute}".format(node_name=self.node_name, **config))
 
 if __name__ == "__main__":
     rospy.init_node("auto_exposure_controller")
