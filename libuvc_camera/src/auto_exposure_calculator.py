@@ -3,7 +3,7 @@
 from math import log, pow, fabs, ceil
 import rospy
 from dynamic_reconfigure.client import Client
-from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -19,9 +19,9 @@ class ev_calculator:
         self.__step_size       = step_size
         self.__update_interval = update_interval
         self.__max_exposure    = max_exposure
-        self.client = Client(master_node_name, timeout=30, config_callback=self.config_callback)
+        self.client = Client(master_node_name, timeout=30, config_callback=None)
         self.image_sub = rospy.Subscriber("src_image", Image, callback=self.img_callback)
-        self.ev_pub = rospy.Publisher("exposure_absolute", Float32, queue_size=1)
+        self.ev_pub = rospy.Publisher("exposure_absolute", Float64, queue_size=1)
 
     def img_callback(self, msg):
         if msg.header.seq % self.__update_interval == 0:
@@ -46,8 +46,6 @@ class ev_calculator:
 
             self.ev_pub.publish(new_exposure_absolute)
     
-    def config_callback(self, config):
-        rospy.loginfo("Master's exposure_absolute set to {exposure_absolute}".format(**config))
 
 if __name__ == "__main__":
     rospy.init_node("auto_exposure_controller")
