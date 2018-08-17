@@ -42,7 +42,9 @@ class ev_calculator:
             height, width = cv_image.shape[:2]
             mask = np.zeros((height, width, 1), np.uint8)
             cv2.circle(mask,(width/2,height/2), height/2, (255, 255, 255), -1)
-            img_msg = self.bridge.cv2_to_imgmsg(mask)
+            masked_image = cv2.bitwise_and(cv_image,mask)
+            concat_image = cv2.hconcat([cv_image, masked_image])
+            img_msg = self.bridge.cv2_to_imgmsg(concat_image)
             self.image_pub.publish(img_msg)
 
             sample = cv_image[240:240+480, 320:320+640]
