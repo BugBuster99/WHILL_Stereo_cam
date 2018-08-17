@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from math import log, pow, fabs, ceil
+import numpy as np
 import rospy
 from dynamic_reconfigure.client import Client
 from std_msgs.msg import Float64
@@ -28,6 +29,7 @@ class ev_calculator:
         self.__max_exposure    = max_exposure
         self.client = Client(master_node_name, timeout=30, config_callback=None)
         self.image_sub = rospy.Subscriber("src_image", Image, callback=self.img_callback)
+        self.image_pub = rospy.Publisher("ev_image", Image, queue_size=1)
         self.ev_pub = rospy.Publisher("exposure_absolute", Float64, queue_size=1)
 
     def img_callback(self, msg):
@@ -36,6 +38,12 @@ class ev_calculator:
                 cv_image = self.bridge.imgmsg_to_cv2(msg, "mono8")
             except CvBridgeError as e:
                 print(e)
+
+            height, width = cv_image.shape[:2]
+            mask = np.zeros((height, width, 1), np.uint8)
+            cv2.circle(mask,(width/2,height/2), height/2, (255, 255, 255), -1)
+            img_msg = self.bridge.cv2_to_imgmsg(mask)
+            self.image_pub.publish(img_msg)
 
             sample = cv_image[240:240+480, 320:320+640]
             brightness_pre = cv2.mean(sample)[0]
