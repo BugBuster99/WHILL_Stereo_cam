@@ -47,8 +47,8 @@ class ev_calculator:
             img_msg = self.bridge.cv2_to_imgmsg(concat_image)
             self.image_pub.publish(img_msg)
 
-            sample = cv_image[240:240+480, 320:320+640]
-            brightness_pre = cv2.mean(sample)[0]
+            #sample = cv_image[240:240+480, 320:320+640]
+            brightness_pre = cv2.mean(cv_image, mask=mask)[0]
             self.params = self.client.get_configuration()
             old_exposure_absolute = self.params['exposure_absolute']
             new_exposure_absolute = pow(2.0, log(self.__brightness_tgt, 2) - log(brightness_pre, 2) + log(old_exposure_absolute, 2))
