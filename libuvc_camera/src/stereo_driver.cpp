@@ -187,6 +187,10 @@ void StereoDriver::ImageCallback(uvc_frame_t *frame) {
   {
     image->step = image->width;
   }
+  else if(frame->frame_format == UVC_FRAME_FORMAT_GRAY16)
+  {
+    image->step = image->width * 2;
+  }
   else
   {
     image->step = image->width * 3;
@@ -223,9 +227,13 @@ void StereoDriver::ImageCallback(uvc_frame_t *frame) {
     image->encoding = "rgb8";
     memcpy(&(image->data[0]), rgb_frame_->data, rgb_frame_->data_bytes);
 #endif
-  } else if (frame->frame_format == UVC_FRAME_FORMAT_GRAY8) {
+  } else if (frame->frame_format == UVC_FRAME_FORMAT_GRAY8 ||
+             frame->frame_format == UVC_FRAME_FORMAT_UNCOMPRESSED) {
     image->encoding = "mono8";
     memcpy(&(image->data[0]), frame->data, image->width * image->height);
+  } else if (frame->frame_format == UVC_FRAME_FORMAT_GRAY16) {
+    image->encoding = "mono16";
+    memcpy(&(image->data[0]), frame->data, frame->data_bytes);
   } else if (frame->frame_format == UVC_FRAME_FORMAT_SGRBG8) {
     image->encoding = "bayer_grbg8";
     memcpy(&(image->data[0]), frame->data, image->width * image->height);

@@ -140,8 +140,9 @@ int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen)
                 | ( ((UINT32)g_in_packet_buf[2]) << 16) 
                 | ( ((UINT32)g_in_packet_buf[1]) << 24) ); 
 
-        XUNIT_DEBUG(pSN, "%d", iBaseBoardSerialNumber);
+        XUNIT_DEBUG("%d", iBaseBoardSerialNumber);
         strcat(pSN, "\0");
+        XUNIT_DEBUG("%s", pSN);
         timeout = FALSE;
       }
     }
@@ -291,7 +292,8 @@ int find_hid_device(const char *serial)
 
     if(!strncmp(udev_device_get_sysattr_value(pdev,"idVendor"), "2560", 4)) {
       if(!strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c110", 4) ||
-         !strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c111", 4)) {
+         !strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c111", 4) ||
+         !strncmp(udev_device_get_sysattr_value(pdev, "idProduct"), "c114", 4)) {
         if(!strncmp(udev_device_get_sysattr_value(pdev,"serial"), serial, 8)) {
           XUNIT_DEBUG("    idVendor:  %s", udev_device_get_sysattr_value(pdev, "idVendor"));
           XUNIT_DEBUG("    idProduct: %s", udev_device_get_sysattr_value(pdev, "idProduct"));
