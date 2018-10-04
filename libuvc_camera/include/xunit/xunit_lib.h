@@ -10,11 +10,10 @@ extern "C" {
 
 
 /* Report Numbers */
-
-#define SET_FAIL		0x02
-#define SET_TRUE		0x01
-#define SET_SUCCESS		0x01
-#define OUT_OF_RANGE		0x03
+#define SET_TRUE        0x01
+#define SET_FAIL        0x02
+#define SET_SUCCESS	    0x01
+#define OUT_OF_RANGE    0x03
 
 #define GENERIC_I2C_OPERATION 0x07
 #define I2C_READ_LEVEL 0x02 
@@ -26,29 +25,51 @@ extern "C" {
 #define SAME_MODE 2
 #define HIGH_SPEED 3
 
-#define BUFFER_LENGTH		80 //41
-#define TIMEOUT			2000
+#define BUFFER_LENGTH       80
+#define TIMEOUT	            2000
 
+#define SET_FAIL_TARA           0x00
+#define SET_SUCCESS_TARA        0x01
+#define GET_FAIL                0x00
+#define GET_SUCCESS			    0x01
 
-#define SUCCESS			1
-#define FAILURE			0	
+#define SUCCESS     1
+#define FAILURE     0	
 
-#define READFIRMWAREVERSION	0x40
-#define GETCAMERA_UNIQUEID	0x41
-#define MASTERMODE		0X50
-#define TRIGGERMODE		0X51
-#define CROPPEDVGAMODE		0X52
+/* Commands */
+#define READ_FIRMWARE_VERSION   0x40
+#define GET_CAMERA_UNIQUE_ID    0x41
 
-#define WHILL_CAMERA_CONTROL	0X91
+#define MASTER_MODE             0X50
+#define TRIGGER_MODE            0X51
+#define CROPPED_VGA_MODE        0X52
 
-#define GETTRIGGERMODE		0x01
-#define FRAMERATECONTROL	0x02
+#define WHILL_CAMERA_CONTROL    0X91
+#define CAMERA_CONTROL_STEREO   0x78
 
-#define GETMINIMUMFRAMERATE	0x01
-#define GETMAXIMUMFRAMERATE	0x02
-#define GETDEFAULTFRAMERATE	0x03
-#define GETFRAMERATE		0x04
-#define SETFRAMERATE		0x05
+#define GET_TRIGGER_MODE        0x01
+#define FRAME_RATE_CONTROL      0x02
+
+#define GET_MINIMUM_FRAME_RATE	0x01
+#define GET_MAXIMUM_FRAME_RATE	0x02
+#define GET_DEFAULT_FRAME_RATE	0x03
+#define GET_FRAME_RATE          0x04
+#define SET_FRAME_RATE          0x05
+
+/* TARA Specific Commands */
+#define GET_EXPOSURE_VALUE			0x01
+#define SET_EXPOSURE_VALUE			0x02
+#define SET_AUTO_EXPOSURE			0x02
+#define SET_HDR_MODE_STEREO     0x0E
+#define GET_HDR_MODE_STEREO     0x0F
+
+/* EXPOSURE CONTROL */
+#define SEE3CAM_STEREO_EXPOSURE_AUTO	(1)
+#define SEE3CAM_STEREO_EXPOSURE_MIN		(10)
+#define SEE3CAM_STEREO_EXPOSURE_MAX		(1000000)
+#define SEE3CAM_STEREO_EXPOSURE_DEF		(8000)
+
+/* General Value */
 #define NULL_HANDLE 0
 
 //uint32_t hid_fd;

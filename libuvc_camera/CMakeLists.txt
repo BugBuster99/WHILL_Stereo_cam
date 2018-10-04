@@ -27,6 +27,9 @@ add_service_files(
   GetFirmwareVersion.srv
   SetFrameRate.srv 
   GetFrameRate.srv
+  SetHDRMode.srv
+  GetHDRMode.srv
+  SetManualExposure.srv
 )
 
 generate_messages(

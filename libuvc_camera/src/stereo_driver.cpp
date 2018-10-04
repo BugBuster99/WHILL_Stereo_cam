@@ -56,11 +56,13 @@ StereoDriver::StereoDriver(ros::NodeHandle nh, ros::NodeHandle priv_nh)
     config_changed_(false),
     cinfo_manager_(nh) {
   cam_pub_ = it_.advertiseCamera("image_raw", 1, false);
-  set_stream_srv_ = nh_.advertiseService("set_stream_mode",&StereoDriver::SetStreamMode,this);
-  get_stream_srv_ = nh_.advertiseService("get_stream_mode",&StereoDriver::GetStreamMode,this);
+  set_stream_srv_ = nh_.advertiseService("set_stream_mode", &StereoDriver::SetStreamMode, this);
+  get_stream_srv_ = nh_.advertiseService("get_stream_mode", &StereoDriver::GetStreamMode, this);
   get_fwver_srv_  = nh_.advertiseService("get_firmware_version", &StereoDriver::GetFirmwareVersion, this);
-  set_frame_rate_srv_ = nh_.advertiseService("set_frame_rate",&StereoDriver::SetFrameRate,this);
-  get_frame_rate_srv_ = nh_.advertiseService("get_frame_rate",&StereoDriver::GetFrameRate,this);
+  set_frame_rate_srv_ = nh_.advertiseService("set_frame_rate", &StereoDriver::SetFrameRate, this);
+  get_frame_rate_srv_ = nh_.advertiseService("get_frame_rate", &StereoDriver::GetFrameRate, this);
+  set_hdr_srv_ = nh_.advertiseService("set_hdr_mode", &StereoDriver::SetHDRMode, this);
+  set_manual_exposure_srv_ = nh_.advertiseService("set_manual_exposure", &StereoDriver::SetManualExposure, this);
 }
 
 StereoDriver::~StereoDriver() {
@@ -616,8 +618,37 @@ bool StereoDriver::GetFrameRate(libuvc_camera::GetFrameRate::Request &req,
   }
 } 
 
+bool StereoDriver::SetHDRMode(libuvc_camera::SetHDRMode::Request &req,
+                              libuvc_camera::SetHDRMode::Response &res)
+{
+  ROS_INFO("%s: HID Handle=%d, HID Device=%s", __func__, hid_fd_, hid_device_.c_str());
+  
+  res.result = SetHDRModeStereo(&hid_fd_, req.enable_HDR);
+  if(res.result == true)
+  {
+    ROS_INFO("HDR Mode successfully set: %s", (req.enable_HDR ? "HDR Enabled" : "HDR Disabled"));
+  }
+  else
+  {
+    ROS_ERROR("%s failed", __func__);
+  }
+  return true;
+} 
 
-
-
-
+bool StereoDriver::SetManualExposure(libuvc_camera::SetManualExposure::Request &req,
+                                     libuvc_camera::SetManualExposure::Response &res)
+{
+  ROS_INFO("%s: HID Handle=%d, HID Device=%s", __func__, hid_fd_, hid_device_.c_str());
+  
+  res.result = SetManualExposureStereo(&hid_fd_, req.exposure);
+  if(res.result == true)
+  {
+    ROS_INFO("HDR Mode successfully set: %d", req.exposure);
+  }
+  else
+  {
+    ROS_ERROR("%s failed", __func__);
+  }
+  return true;
+} 
 };

@@ -16,9 +16,10 @@ typedef unsigned int        UINT32;
 #define TRUE 1
 
 /* VID and PID of SEE3CAM Products */
-#define SEE3CAM_USB_VID			          0x2560
+#define SEE3CAM_USB_VID			        0x2560
 #define SEE3CAM_1MSTEREO_MONO_PID    	0xC110
 #define SEE3CAM_1MSTEREO_COLOUR_PID 	0xC111
+#define SEE3CAM_STEREO_TARA_PID         0xC114
 
 
 #define UVC_RC_UNDEFINED                                0x00
@@ -31,8 +32,8 @@ typedef unsigned int        UINT32;
 #define EXTENSION_UNIT_ID                               3
 
 extern void UpdatePanTilt();
-BOOL g_flash_flag;
-BOOL g_external_trigger_flag;
+bool g_flash_flag;
+bool g_external_trigger_flag;
 
 enum see3cam_device_index
 {
@@ -72,21 +73,21 @@ typedef struct g_uvcBulkStreamStats {
 
 typedef struct g_CPLDversion
 {
-  UINT32 idcode;
-  UINT32 usercode;
+  uint32_t idcode;
+  uint32_t usercode;
 } g_CPLDversion_t;
 
 uint32_t InitExtensionUnit(const char *);
 
 int DeinitExtensionUnit(uint32_t *);
 
-BOOL SendOSCode();
+bool SendOSCode();
 
-BOOL SendCaptureComplete();
+bool SendCaptureComplete();
 
 int ReadFirmwareVersion (uint32_t *, g_FWver_t *);
 
-BOOL GetCameraUniqueID (char *);
+bool GetCameraUniqueID (char *);
 
 int DeinitExtensionUnit(uint32_t *g_Handle);
 
@@ -108,7 +109,11 @@ int GetDefaultFrameRateValue (uint32_t *g_Handle, uint32_t *Value);
 
 int ReadBaseBoardSerialNumber(uint32_t *g_Handle, char *pSN, int maxBufLen);
 
+bool SetHDRModeStereo (uint32_t *g_Handle, uint32_t HDRMode);				//Enables/Disables the HDR mode
 
+bool GetHDRModeStereo (uint32_t *g_Handle, uint32_t *HDRMode);			//Reads the status of the HDR mode
+
+bool SetManualExposureStereo(uint32_t *g_handle, int32_t ExposureValue);
 /* Special event handlers Declarations */
 
 #endif
