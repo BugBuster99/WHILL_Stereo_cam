@@ -1,4 +1,5 @@
 <launch>
+  <arg name="stream_param_file" default="$(find fisheye_stereo)/params/stream_param_640-480.yaml"/>
   <arg name="width"  default="1280" />
   <arg name="height" default="960" />
   <arg name="fps"    default="54" />
@@ -42,8 +43,7 @@
     <param name="index" value="0"/>
     
     <!-- Image size and type -->
-    <param name="width" value="$(arg width)"/>
-    <param name="height" value="$(arg height)"/>
+    <rosparam command="load" file="$(arg stream_param_file)" />
     <!-- choose whichever uncompressed format the camera supports: -->
     <param name="video_mode" value="$(arg video_mode)"/> <!-- or yuyv/nv12/mjpeg -->
     <param name="frame_rate" value="$(arg fps)"/>
