@@ -10,20 +10,20 @@
   <arg name="right_ns" default="right_cam" />
 
   <!-- Left Arm -->
-  <arg name="left_left_eye_serial"   default="24110604"/>
-  <arg name="left_right_eye_serial"  default="33100604"/>
 <!--
-  <arg name="left_left_eye_serial"   default="16114F0B"/>
-  <arg name="left_right_eye_serial"  default="1021450B"/>
+  <arg name="left_right_eye_serial"  default="33100604"/>
+  <arg name="left_left_eye_serial"   default="24110604"/>
 -->
+  <arg name="left_right_eye_serial"  default="2833460B"/>
+  <arg name="left_left_eye_serial"   default="2837460B"/>
 
   <!-- Right Arm -->
-  <arg name="right_left_eye_serial"   default="3D1BC550"/>
-  <arg name="right_right_eye_serial"  default="3D28C550"/>
 <!--
-  <arg name="right_left_eye_serial"   default="36234D0B"/>
-  <arg name="right_right_eye_serial"  default="1125450B"/>
+  <arg name="right_right_eye_serial"  default="3D28C550"/>
+  <arg name="right_left_eye_serial"   default="3D1BC550"/>
 -->
+  <arg name="right_right_eye_serial"  default="2935460B"/>
+  <arg name="right_left_eye_serial"   default="2836460B"/>
 
   <arg name="left_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_left.yaml"/>
   <arg name="right_camera_info_url" default="$(env ROS_HOME)/camera_info/1MStereo_param_right.yaml"/>
