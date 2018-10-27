@@ -1,5 +1,4 @@
 <launch>
-  <arg name="stream_param_file" default="$(find fisheye_stereo)/params/stream_param_640-480.yaml"/>
   <arg name="width"  default="1280" />
   <arg name="height" default="960" />
   <arg name="fps"    default="54" />
@@ -30,7 +29,6 @@
 
   <!-- ===== Left Master ===== -->
   <include file="$(find libuvc_camera)/launch/see3cam_1MStereo.launch">
-    <arg name="stream_param_file" value="$(arg stream_param_file)"/>
     <arg name="width"           value="$(arg width)"/> 
     <arg name="height"          value="$(arg height)"/>
     <arg name="fps"             value="$(arg fps)"/>
@@ -45,7 +43,6 @@
 
   <!-- ===== Right Slave ===== -->
   <include file="$(find libuvc_camera)/launch/see3cam_1MStereo.launch">
-    <arg name="stream_param_file" value="$(arg stream_param_file)"/>
     <arg name="width"           value="$(arg width)"/> 
     <arg name="height"          value="$(arg height)"/>
     <arg name="fps"             value="$(arg fps)"/>
