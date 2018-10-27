@@ -1,26 +1,26 @@
 <launch>
   <arg name="stream_param_file" default="$(find fisheye_stereo)/params/stream_param_640-480.yaml"/>
-  <arg name="width"  default="1280" />
-  <arg name="height" default="960" />
-  <arg name="fps"    default="15" />
+  <arg name="width"  default="640" />
+  <arg name="height" default="480" />
+  <arg name="fps"    default="30" />
   <arg name="exposure_absolute" default="0.0030" />
-  <arg name="brightness_tgt" default="64.0"/>
+  <arg name="brightness_tgt" default="48.0"/>
   <arg name="update_interval" default="15" />
 
   <arg name="left_ns"  default="left_cam" />
   <arg name="right_ns" default="right_cam" />
 
   <!-- Left Arm -->
-  <arg name="left_left_eye_serial"   default="2837460B"/>
-  <arg name="left_right_eye_serial"  default="2833460B"/>
+  <arg name="left_left_eye_serial"   default="24110604"/>
+  <arg name="left_right_eye_serial"  default="33100604"/>
 <!--
   <arg name="left_left_eye_serial"   default="16114F0B"/>
   <arg name="left_right_eye_serial"  default="1021450B"/>
 -->
 
   <!-- Right Arm -->
-  <arg name="right_left_eye_serial"   default="2836460B"/>
-  <arg name="right_right_eye_serial"  default="2935460B"/>
+  <arg name="right_left_eye_serial"   default="3D1BC550"/>
+  <arg name="right_right_eye_serial"  default="3D28C550"/>
 <!--
   <arg name="right_left_eye_serial"   default="36234D0B"/>
   <arg name="right_right_eye_serial"  default="1125450B"/>

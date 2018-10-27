@@ -1,5 +1,4 @@
 <launch>
-  <arg name="stream_param_file" default="$(find fisheye_stereo)/params/stream_param_640-480.yaml"/>
   <arg name="width"  default="1280" />
   <arg name="height" default="960" />
   <arg name="fps"    default="54" />
@@ -27,14 +26,7 @@
   <arg name="nodelet_manager" value="$(arg root_nodelet_manager)" unless="$(arg is_manager_inherited)"/>
   <node pkg="nodelet" type="nodelet" name="manager" args="manager" output="screen" if="$(arg is_manager_inherited)" />
 
-  <node pkg="nodelet" type="nodelet" name="$(arg node_name)" args="load libuvc_camera/stereo_driver $(arg nodelet_manager)" output="screen" respawn="true">
-    <remap from="image_raw" to="$(arg node_name)/image_raw"/>
-    <remap from="set_camera_info" to="$(arg node_name)/set_camera_info"/>
-    <remap from="set_stream_mode" to="$(arg node_name)/set_stream_mode"/>
-    <remap from="get_stream_mode" to="$(arg node_name)/get_stream_mode"/>
-    <remap from="get_firmware_version" to="$(arg node_name)/get_firmware_version"/>
-    <remap from="set_frame_rate" to="$(arg node_name)/set_frame_rate"/>
-    <remap from="get_frame_rate" to="$(arg node_name)/get_frame_rate"/>
+  <node pkg="nodelet" type="nodelet" name="$(arg node_name)" args="load libuvc_camera/stereo_driver $(arg nodelet_manager)" output="screen" >
     <!-- Parameters used to find the camera -->
     <param name="vendor" value="$(arg vendor)"/>
     <param name="product" value="$(arg product)"/>
@@ -43,7 +35,8 @@
     <param name="index" value="0"/>
     
     <!-- Image size and type -->
-    <rosparam command="load" file="$(arg stream_param_file)" />
+    <param name="width" value="$(arg width)"/>
+    <param name="height" value="$(arg height)"/>
     <!-- choose whichever uncompressed format the camera supports: -->
     <param name="video_mode" value="$(arg video_mode)"/> <!-- or yuyv/nv12/mjpeg -->
     <param name="frame_rate" value="$(arg fps)"/>
