@@ -23,6 +23,7 @@ class ev_calculator:
                  max_exposure=0.1):
         self.bridge = CvBridge()
         self.__brightness_tgt  = brightness_tgt
+        self.__brightness_tgt_orig = brightness_tgt
         self.__max_step_size   = max_step_size
         self.__min_step_size   = min_step_size
         self.__update_interval = update_interval
@@ -48,7 +49,17 @@ class ev_calculator:
             self.image_pub.publish(img_msg)
 
             #sample = cv_image[240:240+480, 320:320+640]
+            max_brightness = np.amax(masked_image)
+            #if max_brightness > 250:
+            #    self.__brightness_tgt = self.__brightness_tgt - (max_brightness - 250)
+            #    if self.__brightness_tgt < self.__brightness_tgt_orig/2:
+            #        self.__brightness_tgt = self.__brightness_tgt_orig/2
+            #elif max_brightness < 240:
+            #    self.__brightness_tgt = self.__brightness_tgt + (240 - max_brightness)
+            #    if self.__brightness_tgt > self.__brightness_tgt_orig:
+            #        self.__brightness_tgt = self.__brightness_tgt_orig
             brightness_pre = cv2.mean(cv_image, mask=mask)[0]
+            #brightness_pre = cv2.mean(sample)[0];
             self.params = self.client.get_configuration()
             old_exposure_absolute = self.params['exposure_absolute']
             new_exposure_absolute = pow(2.0, log(self.__brightness_tgt, 2) - log(brightness_pre, 2) + log(old_exposure_absolute, 2))
