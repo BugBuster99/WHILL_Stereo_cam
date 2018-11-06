@@ -1,0 +1,38 @@
+<launch>
+  <arg name="width"  default="1280" />
+  <arg name="height" default="960" />
+  <arg name="fps"    default="15" />
+  <arg name="exposure_absolute" default="0.0030" />
+  <arg name="brightness_tgt" default="64.0"/>
+  <arg name="update_interval" default="15" />
+
+  <arg name="left_ns"  default="left_cam" />
+
+  <!-- Left Arm -->
+  <arg name="left_left_eye_serial"   default="06210604"/>
+  <arg name="left_right_eye_serial"  default="22350604"/>
+
+  <arg name="left_camera_info_url" default="$(env ROS_HOME)/camera_info/left_param.1280.yaml"/>
+
+  <arg name="root_nodelet_manager" default="" />
+  <arg name="is_manager_inherited" value="$(eval root_nodelet_manager == '')"/>
+  <arg name="nodelet_manager" value="/manager" if="$(arg is_manager_inherited)" />
+  <arg name="nodelet_manager" value="$(arg root_nodelet_manager)" unless="$(arg is_manager_inherited)"/>
+  <node pkg="nodelet" type="nodelet" name="manager" args="manager" output="screen" if="$(arg is_manager_inherited)" />
+
+  <group ns="$(arg left_ns)">
+    <include file="$(find libuvc_camera)/launch/stereo_1MStereo.launch">
+      <arg name="width"           value="$(arg width)"/> 
+      <arg name="height"          value="$(arg height)"/>
+      <arg name="fps"             value="$(arg fps)"/>
+      <arg name="exposure_absolute" value="$(arg exposure_absolute)" />
+      <arg name="left_eye_serial"   value="$(arg left_left_eye_serial)"/>
+      <arg name="right_eye_serial"  value="$(arg left_right_eye_serial)"/>
+      <arg name="root_nodelet_manager" value="$(arg nodelet_manager)"/>
+      <arg name="camera_info_url" value="$(arg left_camera_info_url)" />
+      <arg name="brightness_tgt" value="$(arg brightness_tgt)"/>
+      <arg name="update_interval" value="$(arg update_interval)"/>
+    </include>
+  </group>
+</launch>
+
