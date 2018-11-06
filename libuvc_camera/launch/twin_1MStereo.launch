@@ -10,16 +10,16 @@
   <arg name="right_ns" default="right_cam" />
 
   <!-- Left Arm -->
-  <arg name="left_left_eye_serial"   default="2837460B"/>
-  <arg name="left_right_eye_serial"  default="2833460B"/>
+  <arg name="left_left_eye_serial"   default="06210604"/>
+  <arg name="left_right_eye_serial"  default="22350604"/>
 <!--
   <arg name="left_left_eye_serial"   default="16114F0B"/>
   <arg name="left_right_eye_serial"  default="1021450B"/>
 -->
 
   <!-- Right Arm -->
-  <arg name="right_left_eye_serial"   default="2836460B"/>
-  <arg name="right_right_eye_serial"  default="2935460B"/>
+  <arg name="right_left_eye_serial"   default="0D140604"/>
+  <arg name="right_right_eye_serial"  default="15370604"/>
 <!--
   <arg name="right_left_eye_serial"   default="36234D0B"/>
   <arg name="right_right_eye_serial"  default="1125450B"/>

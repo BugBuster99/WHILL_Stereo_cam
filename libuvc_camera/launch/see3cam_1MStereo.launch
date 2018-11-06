@@ -37,7 +37,7 @@
     <!-- Parameters used to find the camera -->
     <param name="vendor" value="$(arg vendor)"/>
     <param name="product" value="$(arg product)"/>
-    <param name="serial" value="$(arg serial)"/>
+    <param name="serial" type="string" value="$(arg serial)"/>
     <!-- If the above parameters aren't unique, choose the first match: -->
     <param name="index" value="0"/>
     
