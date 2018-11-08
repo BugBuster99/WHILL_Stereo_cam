@@ -1,13 +1,13 @@
 <launch>
-  <arg name="width"  default="1280" />
-  <arg name="height" default="960" />
-  <arg name="fps"    default="54" />
+  <arg name="width"  default="640" />
+  <arg name="height" default="480" />
+  <arg name="fps"    default="30" />
   <arg name="namespace" default="camera" />
 
   <arg name="vendor" default="0x2560" />
-  <arg name="product" default="0xc110" />
-  <arg name="serial"  default="36234D0B"/>
-  <arg name="node_name" default="left_master" />
+  <arg name="product" default="0xc114" />
+  <arg name="serial"  default="1A195304"/>
+  <arg name="node_name" default="master" />
 
   <arg name="video_mode" default="uncompressed" />
   <arg name="camera_info_url" default="file://$(env ROS_HOME)/camera_info/cameraLeft.yaml"/>
@@ -15,7 +15,7 @@
   <arg name="auto_exposure" default="3"/>
   <arg name="auto_white_balance" default="false" />
   <arg name="auto_focus"         default="false" />
-  <arg name="exposure_absolute" default="0.0030"/>
+  <arg name="exposure_absolute" default="0.0005"/>
   <arg name="scanning_mode" default="0"/>
   <arg name="auto_exposure_priority" default="0"/>
   <arg name="iris_absolute" default="0.0"/>
@@ -50,5 +50,7 @@
     <param name="exposure_absolute" value="$(arg exposure_absolute)"/>
     <param name="scanning_mode" value="$(arg scanning_mode)"/>
     <param name="auto_exposure_priority" value="$(arg auto_exposure_priority)"/>
+    <remap from="image_raw" to="/left_cam/image_raw"/>
+    <remap from="set_camera_info" to="/left_cam/set_camera_info"/>
   </node>
 </launch>
